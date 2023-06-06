@@ -23,7 +23,8 @@ func InitRouter() *gin.Engine {
 		user := controllers.UserCtl{}
 		apiv1.POST("/add", user.AddUsers)
 		apiv1.GET("/get", user.GetUsers)
+		apiv1.GET("/test", user.FetchDataFromPron)
+		apiv1.GET("/upload", user.Upload)
 	}
-
 	return r
 }
