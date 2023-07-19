@@ -9,6 +9,18 @@ import (
 type UserService struct {
 }
 
+func (us *UserService) QueryUserByName(username string) (user *models.User, err error) {
+	tx := logic.Db.Table("user").First(&user, "username=?", username)
+	log.Println("user--->>>", user)
+	err = tx.Error
+	return user, err
+}
+func (us *UserService) QueryUserById(username string) (user *models.User, err error) {
+	tx := logic.Db.Table("user").First(&user, "id=?", username)
+	log.Println("user--->>>", user)
+	err = tx.Error
+	return user, err
+}
 func (us *UserService) GetUsers() []*models.User {
 	users := make([]*models.User, 0)
 	logic.Db.Find(&users).Limit(10).Offset(0)
@@ -17,7 +29,7 @@ func (us *UserService) GetUsers() []*models.User {
 
 func (us *UserService) GetUser() (user *models.User) {
 	logic.Db.First(&user, &models.User{
-		Name: "zhansan",
+		Username: "zhansan",
 	})
 	return
 }

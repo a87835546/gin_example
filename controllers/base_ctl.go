@@ -1,12 +1,18 @@
 package controllers
 
 import (
+	"gin_example/doreamon"
+	"gin_example/models"
+	jwtgo "github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 func RandomString() string {
@@ -48,4 +54,59 @@ func Read(filepath string) []byte {
 	}
 
 	return fd
+}
+
+type Result struct {
+	code    int
+	message string
+	data    any
+}
+
+func RespOk(ctx *gin.Context, data interface{}) {
+	//ctx.JSON(200, &Result{code: 200, message: "success", data: data})
+	ctx.JSON(200, gin.H{"code": 200, "message": "success", "data": data})
+	ctx.Next()
+}
+func RespError(ctx *gin.Context, code int, data interface{}) {
+	RespErrorWithMsg(ctx, code, "fail", data)
+}
+
+func RespErrorWithMsg(ctx *gin.Context, code int, message string, data interface{}) {
+	ctx.JSON(200, gin.H{"code": code, "message": message, "data": data})
+	ctx.Next()
+}
+
+// 生成令牌
+func generateToken(c *gin.Context, user *models.User) {
+	j := &doreamon.JWT{
+		SigningKey: []byte("newtrekWang"),
+	}
+
+	claims := doreamon.CustomClaims{
+		ID:   user.Id,
+		Name: user.Username,
+		StandardClaims: jwtgo.StandardClaims{
+			NotBefore: int64(time.Now().Unix() - 1000), // 签名生效时间
+			ExpiresAt: int64(time.Now().Unix() + 3600), // 过期时间 一小时
+			Issuer:    "newtrekWang",                   //签名的发行者
+		},
+	}
+
+	token, err := j.CreateToken(claims)
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code":    -1,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	log.Println(token)
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"message": "登录成功！",
+		"data":    token,
+	})
+	return
 }

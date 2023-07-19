@@ -2,6 +2,7 @@ package routers
 
 import (
 	"gin_example/controllers"
+	"gin_example/doreamon"
 	"gin_example/middleware"
 	"github.com/gin-gonic/gin"
 	_ "net/http"
@@ -23,9 +24,11 @@ func InitRouter() *gin.Engine {
 			})
 		})
 		usergroup := apiv1.Group("/user")
+		usergroup.Use(doreamon.JWTAuth())
 		user := controllers.UserCtl{}
 		usergroup.POST("/add", user.AddUsers)
 		usergroup.POST("/login", user.Login)
+		usergroup.GET("/info", user.GetUser)
 		usergroup.POST("/logout", user.Logout)
 		usergroup.GET("/get", user.GetUsers)
 		usergroup.GET("/test", user.FetchDataFromPron)

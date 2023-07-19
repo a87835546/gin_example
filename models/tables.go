@@ -1,8 +1,14 @@
 package models
 
+import "time"
+
 type User struct {
-	Name   string `json:"name"`
-	Avatar string `json:"avatar"`
+	Username  string    `json:"username"`
+	Password  string    `json:"password"`
+	Id        int       `json:"id"`
+	Role      int       `json:"role"`
+	CreatedAt time.Time `json:"created_at" gorm:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"updated_at"`
 }
 
 type VideoInfo struct {

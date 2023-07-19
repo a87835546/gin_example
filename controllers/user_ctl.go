@@ -28,12 +28,38 @@ type UserCtl struct {
 func (uc *UserCtl) GetUsers(ctx *gin.Context) {
 	ctx.JSON(200, us.GetUsers())
 }
-
+func (uc *UserCtl) GetUserById(ctx *gin.Context) {
+	if id, ok := ctx.Get("id"); ok {
+		user, err := us.QueryUserById(id.(string))
+		if err != nil {
+			RespError(ctx, 201, err.Error())
+		} else {
+			RespOk(ctx, user)
+		}
+	}
+}
+func (uc *UserCtl) GetUser(ctx *gin.Context) {
+	if user, ok := ctx.Get("claims"); ok {
+		log.Println("user-->>", user)
+		//if err != nil {
+		//	RespError(ctx, 201, err.Error())
+		//} else {
+		RespOk(ctx, user)
+		//}
+	}
+}
 func (uc *UserCtl) Login(ctx *gin.Context) {
 	req := UserLoginReq{}
 	ctx.BindJSON(&req)
 	log.Println("req--->>>", req)
-	ctx.JSON(200, us.GetUsers())
+	user, err := us.QueryUserByName(req.Username)
+	if err != nil {
+		RespErrorWithMsg(ctx, 201, err.Error(), nil)
+	} else if user.Password != req.Password {
+		RespErrorWithMsg(ctx, 202, "password is wrong", nil)
+	} else {
+		generateToken(ctx, user)
+	}
 }
 func (uc *UserCtl) Logout(ctx *gin.Context) {
 	ctx.JSON(200, us.GetUsers())
