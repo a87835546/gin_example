@@ -3,7 +3,9 @@ module gin_example
 go 1.19
 
 require (
+	github.com/aws/aws-sdk-go v1.44.237
 	github.com/gin-gonic/gin v1.9.0
+	github.com/gocolly/colly/v2 v2.1.0
 	gorm.io/driver/mysql v1.4.7
 	gorm.io/gorm v1.24.6
 )
@@ -14,7 +16,6 @@ require (
 	github.com/antchfx/htmlquery v1.3.0 // indirect
 	github.com/antchfx/xmlquery v1.3.15 // indirect
 	github.com/antchfx/xpath v1.2.4 // indirect
-	github.com/aws/aws-sdk-go v1.44.237 // indirect
 	github.com/bytedance/sonic v1.8.6 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
@@ -24,7 +25,6 @@ require (
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/gocolly/colly/v2 v2.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect

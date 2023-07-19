@@ -20,11 +20,15 @@ func InitRouter() *gin.Engine {
 				"message": "pong",
 			})
 		})
-		user := controllers.UserCtl{}
-		apiv1.POST("/add", user.AddUsers)
-		apiv1.GET("/get", user.GetUsers)
-		apiv1.GET("/test", user.FetchDataFromPron)
-		apiv1.GET("/upload", user.Upload)
+		apiv1.Group("/user", func(context *gin.Context) {
+			user := controllers.UserCtl{}
+			apiv1.POST("/add", user.AddUsers)
+			apiv1.POST("/login", user.Login)
+			apiv1.POST("/logout", user.Logout)
+			apiv1.GET("/get", user.GetUsers)
+			apiv1.GET("/test", user.FetchDataFromPron)
+			apiv1.GET("/upload", user.Upload)
+		})
 	}
 	return r
 }

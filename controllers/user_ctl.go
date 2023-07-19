@@ -24,6 +24,13 @@ type UserCtl struct {
 func (uc *UserCtl) GetUsers(ctx *gin.Context) {
 	ctx.JSON(200, us.GetUsers())
 }
+
+func (uc *UserCtl) Login(ctx *gin.Context) {
+	ctx.JSON(200, us.GetUsers())
+}
+func (uc *UserCtl) Logout(ctx *gin.Context) {
+	ctx.JSON(200, us.GetUsers())
+}
 func (uc *UserCtl) AddUsers(ctx *gin.Context) {
 	user := models.User{}
 	if err := ctx.BindJSON(&user); err != nil {

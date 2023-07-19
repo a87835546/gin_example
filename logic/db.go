@@ -9,8 +9,8 @@ import (
 
 const (
 	dbUser     string = "root"
-	dbPassword string = "123456abc"
-	dbHost     string = "13.215.251.145"
+	dbPassword string = "123456"
+	dbHost     string = "127.0.0.1"
 	dbPort     int    = 3306
 	dbName     string = "demo"
 )
