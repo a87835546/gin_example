@@ -25,3 +25,22 @@ type VideoModel struct {
 	NewUrl     string `json:"new_url" db:"new_url"`
 	CreatedAt  int64  `json:"created_at" db:"created_at"`
 }
+
+type MenuModel struct {
+	Id        int       `json:"id" db:"id"`
+	Desc      string    `json:"desc"`
+	Title     string    `json:"title"`
+	Role      int       `json:"role"`
+	Position  int       `json:"position"`
+	CreatedAt time.Time `json:"created_at" gorm:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"updated_at"`
+}
+
+type Billboard struct {
+	Id         int64     `json:"id" db:"id"`
+	Url        *string   `json:"url"`
+	Title      *string   `json:"title"`
+	CategoryId *int      `json:"category_id"`
+	CreatedAt  string    `json:"created_at" gorm:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at" gorm:"updated_at"`
+}
