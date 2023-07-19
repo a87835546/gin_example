@@ -46,6 +46,8 @@ func (uc *UserCtl) GetUser(ctx *gin.Context) {
 		//} else {
 		RespOk(ctx, user)
 		//}
+	} else {
+		RespErrorWithMsg(ctx, 209, "unkown error", nil)
 	}
 }
 func (uc *UserCtl) Login(ctx *gin.Context) {

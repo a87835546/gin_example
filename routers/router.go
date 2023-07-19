@@ -13,6 +13,7 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.Use(middleware.Cors())
+	r.Use(doreamon.JWTAuth())
 
 	//r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
@@ -24,7 +25,6 @@ func InitRouter() *gin.Engine {
 			})
 		})
 		usergroup := apiv1.Group("/user")
-		usergroup.Use(doreamon.JWTAuth())
 		user := controllers.UserCtl{}
 		usergroup.POST("/add", user.AddUsers)
 		usergroup.POST("/login", user.Login)

@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"fmt"
 	"gin_example/doreamon"
+	"gin_example/logic"
 	"gin_example/models"
 	jwtgo "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -108,5 +110,8 @@ func generateToken(c *gin.Context, user *models.User) {
 		"message": "登录成功！",
 		"data":    token,
 	})
+	log.Println("user--->>>", user)
+	key := fmt.Sprintf("user:%d:token", user.Id)
+	logic.Client.Set(key, token, 3600*time.Second)
 	return
 }

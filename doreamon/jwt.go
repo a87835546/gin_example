@@ -14,6 +14,7 @@ import (
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if strings.Contains(c.Request.RequestURI, "login") {
+			c.Next()
 			return
 		}
 		token := c.Request.Header.Get("X-Token")
@@ -52,6 +53,7 @@ func JWTAuth() gin.HandlerFunc {
 		}
 		c.Set("isPass", true)
 		c.Set("claims", claims)
+		c.Next()
 	}
 }
 
