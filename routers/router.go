@@ -2,6 +2,7 @@ package routers
 
 import (
 	"gin_example/controllers"
+	"gin_example/middleware"
 	"github.com/gin-gonic/gin"
 	_ "net/http"
 )
@@ -10,6 +11,7 @@ func InitRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+	r.Use(middleware.Cors())
 
 	//r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
@@ -20,15 +22,14 @@ func InitRouter() *gin.Engine {
 				"message": "pong",
 			})
 		})
-		apiv1.Group("/user", func(context *gin.Context) {
-			user := controllers.UserCtl{}
-			apiv1.POST("/add", user.AddUsers)
-			apiv1.POST("/login", user.Login)
-			apiv1.POST("/logout", user.Logout)
-			apiv1.GET("/get", user.GetUsers)
-			apiv1.GET("/test", user.FetchDataFromPron)
-			apiv1.GET("/upload", user.Upload)
-		})
+		usergroup := apiv1.Group("/user")
+		user := controllers.UserCtl{}
+		usergroup.POST("/add", user.AddUsers)
+		usergroup.POST("/login", user.Login)
+		usergroup.POST("/logout", user.Logout)
+		usergroup.GET("/get", user.GetUsers)
+		usergroup.GET("/test", user.FetchDataFromPron)
+		usergroup.GET("/upload", user.Upload)
 	}
 	return r
 }

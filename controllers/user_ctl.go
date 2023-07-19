@@ -17,6 +17,10 @@ import (
 
 var us = service.UserService{}
 
+type UserLoginReq struct {
+	Username string
+	Password string
+}
 type UserCtl struct {
 	mu sync.RWMutex
 }
@@ -26,6 +30,9 @@ func (uc *UserCtl) GetUsers(ctx *gin.Context) {
 }
 
 func (uc *UserCtl) Login(ctx *gin.Context) {
+	req := UserLoginReq{}
+	ctx.BindJSON(&req)
+	log.Println("req--->>>", req)
 	ctx.JSON(200, us.GetUsers())
 }
 func (uc *UserCtl) Logout(ctx *gin.Context) {
