@@ -18,14 +18,14 @@ func Cors() gin.HandlerFunc {
 			c.Header("Access-Control-Allow-Credentials", "true")
 		}
 		if method == "OPTIONS" {
+			/* 添加 */
 			c.Header("Access-Control-Allow-Origin", "*")
-			c.Header("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization") //自定义 Header
-			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-			c.Header("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type")
-			c.Header("Access-Control-Allow-Credentials", "true")
-			c.AbortWithStatus(http.StatusNoContent) // 截获处理,并响应成功即可
-			//c.AbortWithStatus(http.StatusOK)
+			c.Header("Access-Control-Allow-Methods", "OPTIONS")
+			c.Header("Access-Control-Allow-Headers", "*")
+			/* 添加 */
+			c.AbortWithStatus(http.StatusNoContent)
 		}
+
 		defer func() {
 			if err := recover(); err != nil {
 				log.Printf("Panic info is: %v", err)

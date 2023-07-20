@@ -2,9 +2,9 @@ package routers
 
 import (
 	"gin_example/controllers"
+	"gin_example/doreamon"
 	"gin_example/middleware"
 	"github.com/gin-gonic/gin"
-	_ "net/http"
 )
 
 func InitRouter() *gin.Engine {
@@ -12,7 +12,7 @@ func InitRouter() *gin.Engine {
 	r.Use(middleware.Cors())
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-	//r.Use(doreamon.JWTAuth())
+	r.Use(doreamon.JWTAuth())
 
 	//r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

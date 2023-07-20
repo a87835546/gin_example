@@ -11,13 +11,11 @@ type UserService struct {
 
 func (us *UserService) QueryUserByName(username string) (user *models.User, err error) {
 	tx := logic.Db.Table("user").First(&user, "username=?", username)
-	log.Println("user--->>>", user)
 	err = tx.Error
 	return user, err
 }
 func (us *UserService) QueryUserById(username string) (user *models.User, err error) {
 	tx := logic.Db.Table("user").First(&user, "id=?", username)
-	log.Println("user--->>>", user)
 	err = tx.Error
 	return user, err
 }
