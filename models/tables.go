@@ -37,10 +37,10 @@ type MenuModel struct {
 }
 
 type Billboard struct {
-	Id         int64     `json:"id" db:"id"`
-	Url        *string   `json:"url"`
-	Title      *string   `json:"title"`
-	CategoryId *int      `json:"category_id"`
+	Id         int64     `json:"id" gorm:"id"`
+	Url        string    `json:"url" gorm:"url"`
+	Title      string    `json:"title" gorm:"title"`
+	CategoryId int       `json:"category_id" gorm:"category_id"`
 	CreatedAt  string    `json:"created_at" gorm:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at" gorm:"updated_at"`
 }

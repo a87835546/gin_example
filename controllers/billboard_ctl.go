@@ -28,6 +28,8 @@ func (mc *BillboardController) InsertBillboard(ctx *gin.Context) {
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
+		log.Printf("billboard req--->> %#v", req)
+
 		m, err := bs.QueryByUrl(req.Url)
 		log.Printf("billboard --->> %#v", m)
 		if m.Id != 0 {

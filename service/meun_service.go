@@ -28,10 +28,10 @@ func (ms *MenuService) Insert(p *param.MenuInsertReq) error {
 	return err
 }
 func (ms *MenuService) Delete(id int) error {
-	err := logic.Db.Table("menu").Delete(models.MenuModel{}).Where("id=?", id).Error
+	err := logic.Db.Table("menu").Where("id=?", id).Delete(models.MenuModel{}).Error
 	return err
 }
 func (ms *MenuService) QueryByTitle(title string) (m *models.MenuModel, err error) {
-	err = logic.Db.Debug().Table("menu").Find(&m).Where("title", title).Error
+	err = logic.Db.Debug().Table("menu").Where("title=?", title).First(&m).Error
 	return
 }

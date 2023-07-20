@@ -20,11 +20,11 @@ func (bs *BillboardService) Insert(billboard *param.InsertReq) (err error) {
 }
 
 func (bs *BillboardService) QueryByUrl(url string) (bill *models.Billboard, err error) {
-	err = logic.Db.Table("billboard").Find(&bill).Where("url=?", url).Error
+	err = logic.Db.Table("billboard").Where("url=?", url).First(&bill).Error
 	return
 }
 func (bs *BillboardService) QueryByTitle(title string) (bill *models.Billboard, err error) {
-	err = logic.Db.Table("billboard").Find(&bill).Where("title=?", title).Error
+	err = logic.Db.Table("billboard").Where("title=?", title).First(&bill).Error
 	return
 }
 func (bs *BillboardService) Update(billboard *param.InsertReq) (err error) {
