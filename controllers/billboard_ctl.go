@@ -3,6 +3,7 @@ package controllers
 import (
 	"gin_example/param"
 	"gin_example/service"
+	"gin_example/utils"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -23,22 +24,30 @@ func (mc *BillboardController) GetList(ctx *gin.Context) {
 
 func (mc *BillboardController) InsertBillboard(ctx *gin.Context) {
 	req := param.InsertReq{}
-	ctx.BindJSON(&req)
 	log.Printf("req --->>%#v", req)
-	err := bs.Insert(&req)
-	if err == nil {
-		RespOk(ctx, nil)
+	err := ctx.ShouldBindJSON(&req)
+	if err != nil {
+		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
-		RespErrorWithMsg(ctx, 210, err.Error(), nil)
+		err = bs.Insert(&req)
+		if err == nil {
+			RespOk(ctx, nil)
+		} else {
+			RespErrorWithMsg(ctx, 210, err.Error(), nil)
+		}
 	}
 }
 func (mc *BillboardController) UpdateBillboard(ctx *gin.Context) {
 	req := param.InsertReq{}
-	ctx.BindJSON(&req)
-	err := bs.Insert(&req)
-	if err == nil {
-		RespOk(ctx, nil)
+	err := ctx.ShouldBindJSON(&req)
+	if err != nil {
+		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
-		RespErrorWithMsg(ctx, 210, err.Error(), nil)
+		err = bs.Insert(&req)
+		if err == nil {
+			RespOk(ctx, nil)
+		} else {
+			RespErrorWithMsg(ctx, 210, err.Error(), nil)
+		}
 	}
 }

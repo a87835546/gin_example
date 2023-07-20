@@ -39,6 +39,9 @@ func InitRouter() *gin.Engine {
 		{
 			menu := controllers.MenuController{}
 			menug.GET("/list", menu.GetMenus)
+			menug.POST("/update", menu.UpdateMenu)
+			menug.POST("/insert", menu.InsertMenus)
+			menug.POST("/delete", menu.DeleteMenus)
 		}
 
 		billboardGroup := apiv1.Group("/billboard")
