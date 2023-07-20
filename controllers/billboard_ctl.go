@@ -24,16 +24,21 @@ func (mc *BillboardController) GetList(ctx *gin.Context) {
 
 func (mc *BillboardController) InsertBillboard(ctx *gin.Context) {
 	req := param.InsertReq{}
-	log.Printf("req --->>%#v", req)
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
-		err = bs.Insert(&req)
-		if err == nil {
-			RespOk(ctx, nil)
+		m, err := bs.QueryByUrl(req.Url)
+		log.Printf("billboard --->> %#v", m)
+		if m.Id != 0 || err == nil {
+			RespErrorWithMsg(ctx, utils.InsertDBErrorCode, "插入数据异常已经存在", m)
 		} else {
-			RespErrorWithMsg(ctx, 210, err.Error(), nil)
+			err = bs.Insert(&req)
+			if err == nil {
+				RespOk(ctx, nil)
+			} else {
+				RespErrorWithMsg(ctx, 210, err.Error(), nil)
+			}
 		}
 	}
 }

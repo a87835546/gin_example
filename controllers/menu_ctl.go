@@ -45,7 +45,7 @@ func (mc *MenuController) InsertMenus(ctx *gin.Context) {
 	} else {
 		m, err := ms.QueryByTitle(req.Title)
 		log.Printf("menu --->> %#v", m)
-		if m != nil || err == nil {
+		if m.Id != 0 || err == nil {
 			RespErrorWithMsg(ctx, utils.InsertDBErrorCode, "插入数据异常已经存在", m)
 		} else {
 			err = ms.Insert(&req)
