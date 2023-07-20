@@ -30,7 +30,7 @@ func (mc *BillboardController) InsertBillboard(ctx *gin.Context) {
 	} else {
 		m, err := bs.QueryByUrl(req.Url)
 		log.Printf("billboard --->> %#v", m)
-		if m.Id != 0 || err == nil {
+		if m.Id != 0 {
 			RespErrorWithMsg(ctx, utils.InsertDBErrorCode, "插入数据异常已经存在", m)
 		} else {
 			err = bs.Insert(&req)

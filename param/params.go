@@ -4,7 +4,7 @@ type InsertReq struct {
 	Title      string `json:"title" binding:"required"`
 	Url        string `json:"url" binding:"required"`
 	Desc       string `json:"desc" binding:"required"`
-	CategoryId int    `json:"category_id" binding:"required"`
+	CategoryId int    `json:"category_id"`
 }
 
 type MenuInsertReq struct {
