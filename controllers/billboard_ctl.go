@@ -58,3 +58,15 @@ func (mc *BillboardController) UpdateBillboard(ctx *gin.Context) {
 		}
 	}
 }
+
+func (mc *BillboardController) Delete(ctx *gin.Context) {
+	mp := make(map[string]int, 0)
+	ctx.BindJSON(&mp)
+	id, _ := mp["id"]
+	err := bs.Delete(id)
+	if err != nil {
+		RespErrorWithMsg(ctx, utils.DeleteDBErrorCode, "删除数据异常", err.Error())
+	} else {
+		RespOk(ctx, nil)
+	}
+}

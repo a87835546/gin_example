@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gin_example/models"
 	"gin_example/service"
+	"gin_example/utils"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -47,7 +48,7 @@ func (uc *UserCtl) GetUser(ctx *gin.Context) {
 		RespOk(ctx, user)
 		//}
 	} else {
-		RespErrorWithMsg(ctx, 209, "unknown error", nil)
+		RespErrorWithMsg(ctx, utils.UnknownErrorCode, "unknown error", nil)
 	}
 }
 func (uc *UserCtl) Login(ctx *gin.Context) {
@@ -56,9 +57,9 @@ func (uc *UserCtl) Login(ctx *gin.Context) {
 	log.Println("req--->>>", req)
 	user, err := us.QueryUserByName(req.Username)
 	if err != nil {
-		RespErrorWithMsg(ctx, 201, err.Error(), nil)
+		RespErrorWithMsg(ctx, utils.InsertDBErrorCode, err.Error(), nil)
 	} else if user.Password != req.Password {
-		RespErrorWithMsg(ctx, 202, "password is wrong", nil)
+		RespErrorWithMsg(ctx, utils.LoginPasswordErrorCode, "password is wrong", nil)
 	} else {
 		generateToken(ctx, user)
 	}

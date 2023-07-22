@@ -31,3 +31,8 @@ func (bs *BillboardService) Update(billboard *param.InsertReq) (err error) {
 	err = logic.Db.Table("billboard").Updates(&billboard).Error
 	return
 }
+
+func (bs *BillboardService) Delete(i int) (err error) {
+	err = logic.Db.Table("billboard").Where("id=?", i).Delete(models.Billboard{}).Error
+	return err
+}
