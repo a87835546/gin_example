@@ -114,3 +114,7 @@ func generateToken(c *gin.Context, user *models.User) {
 	logic.Client.Set(key, token, 3600*time.Second)
 	return
 }
+
+func SystemConfig(ctx *gin.Context) {
+	RespOk(ctx, nil)
+}
