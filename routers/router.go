@@ -3,7 +3,6 @@ package routers
 import (
 	"fmt"
 	"gin_example/controllers"
-	"gin_example/doreamon"
 	"gin_example/middleware"
 	"github.com/gin-gonic/gin"
 	"io"
@@ -27,7 +26,7 @@ func InitRouter() *gin.Engine {
 	log.SetOutput(f)
 	//r.Use(gin.LoggerWithWriter(f))
 	r.Use(gin.Recovery())
-	r.Use(doreamon.JWTAuth())
+	//r.Use(doreamon.JWTAuth())
 	gin.DefaultWriter = io.MultiWriter(f)
 
 	//r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

@@ -19,9 +19,10 @@ import (
 type ApiCtl struct {
 }
 
-const missingClientSecretsMessage = `
-Please configure OAuth 2.0
-`
+//const missingClientSecretsMessage = `
+//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
+//AIzaSyCHV5I6BklqfUGo3rCeuHAsrqqynmmswuU -- API 密钥 1
+//`
 
 // getClient uses a Context and Config to retrieve a Token
 // then generate a Client. It returns the generated Client.
@@ -121,7 +122,7 @@ func channelsListByUsername(service *youtube.Service, part string, forUsername s
 func main() {
 	ctx := context.Background()
 
-	b, err := ioutil.ReadFile("client_secret.json")
+	b, err := ioutil.ReadFile("./client_secret.json")
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
 	}
