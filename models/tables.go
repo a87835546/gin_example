@@ -42,7 +42,7 @@ type Billboard struct {
 	Desc       string    `json:"desc"`
 	Author     string    `json:"author"`
 	Title      string    `json:"title" gorm:"title"`
-	ThemeUrl   string    `json:"theme_url" gorm:"theme"`
+	ThemeUrl   string    `json:"theme_url" gorm:"column:theme_url"`
 	CategoryId int       `json:"category_id" gorm:"category_id"`
 	CreatedAt  string    `json:"created_at" gorm:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at" gorm:"updated_at"`

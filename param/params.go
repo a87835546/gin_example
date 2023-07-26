@@ -5,6 +5,7 @@ type InsertReq struct {
 	Url        string `json:"url" binding:"required"`
 	Desc       string `json:"desc" binding:"required"`
 	Author     string `json:"author"`
+	ThemeUrl   string `json:"theme_url"`
 	CategoryId int    `json:"category_id"`
 }
 
