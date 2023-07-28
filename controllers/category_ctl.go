@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"gin_example/models"
-	"gin_example/param"
 	"gin_example/service"
 	"gin_example/utils"
 	"github.com/gin-gonic/gin"
@@ -23,13 +22,13 @@ func (mc *CategoryController) GetCategories(ctx *gin.Context) {
 	}
 }
 
-func (mc *CategoryController) UpdateMenu(ctx *gin.Context) {
-	req := param.MenuInsertReq{}
+func (mc *CategoryController) Update(ctx *gin.Context) {
+	req := models.CategoryModel{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
-		err = ms.Update(&req)
+		err = cs.Update(&req)
 		if err == nil {
 			RespOk(ctx, nil)
 		} else {

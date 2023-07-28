@@ -3,7 +3,6 @@ package service
 import (
 	"gin_example/logic"
 	"gin_example/models"
-	"gin_example/param"
 )
 
 type CategoryService struct {
@@ -19,7 +18,7 @@ func (ms *CategoryService) GetCategories() (list []*models.CategoryModel, err er
 	return
 }
 
-func (ms *CategoryService) Update(p *param.MenuInsertReq) error {
+func (ms *CategoryService) Update(p *models.CategoryModel) error {
 	err := logic.Db.Table("category").Updates(p).Error
 	return err
 }
