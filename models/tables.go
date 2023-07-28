@@ -47,3 +47,11 @@ type Billboard struct {
 	CreatedAt  string    `json:"created_at" gorm:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at" gorm:"updated_at"`
 }
+
+type CategoryModel struct {
+	Id        int64     `json:"id" gorm:"id"`
+	CreatedAt string    `json:"created_at" gorm:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"updated_at"`
+	Title     string    `json:"title" gorm:"title"`
+	Author    string    `json:"author" gorm:"column:operation_name"`
+}
