@@ -57,6 +57,8 @@ type CategoryModel struct {
 }
 
 type AppCategoryModel struct {
-	Index int64  `json:"index" gorm:"index"`
+	Id    int    `json:"id" gorm:"id"`
+	Index int    `json:"index" gorm:"index"`
 	Title string `json:"title" gorm:"title"`
+	Desc  string `json:"desc" gorm:"desc"`
 }

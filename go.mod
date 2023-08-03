@@ -5,10 +5,12 @@ go 1.19
 require (
 	github.com/aws/aws-sdk-go v1.44.237
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/fwhappy/mahjong v0.0.0-20170814073940-b524c327d18e
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/goccy/go-json v0.10.2
 	github.com/gocolly/colly/v2 v2.1.0
+	github.com/mitchellh/mapstructure v1.5.0
 	golang.org/x/oauth2 v0.10.0
 	google.golang.org/api v0.133.0
 	gorm.io/driver/mysql v1.4.7
@@ -25,6 +27,7 @@ require (
 	github.com/antchfx/xpath v1.2.4 // indirect
 	github.com/bytedance/sonic v1.8.6 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
+	github.com/fwhappy/util v0.0.0-20180525060231-b4d1afcf7632 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect

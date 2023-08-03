@@ -24,17 +24,28 @@ func (mc *CategoryController) GetCategories(ctx *gin.Context) {
 
 func (mc *CategoryController) GetAppTabbarCategories(ctx *gin.Context) {
 	list, err := cs.GetAppCategories()
-	if err == nil {
+	if err == nil || len(list) == 0 {
 		RespOk(ctx, list)
 	} else {
 		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
 	}
 }
 func (mc *CategoryController) ModifyAppTabbarCategories(ctx *gin.Context) {
-	mp := make(map[string]string, 0)
+	app := models.AppCategoryModel{}
+	err := ctx.BindJSON(&app)
+	err = cs.EditAppCategories(&app)
+	if err == nil {
+		RespOk(ctx, nil)
+	} else {
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
+	}
+}
+
+func (mc *CategoryController) DeleteAppTabbarCategories(ctx *gin.Context) {
+	mp := make(map[string]int, 0)
 	err := ctx.BindJSON(&mp)
-	val := mp["value"]
-	err = cs.EditAppCategories(val)
+	id := mp["id"]
+	err = cs.DeleteAppCategories(id)
 	if err == nil {
 		RespOk(ctx, nil)
 	} else {
