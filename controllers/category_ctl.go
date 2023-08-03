@@ -18,7 +18,27 @@ func (mc *CategoryController) GetCategories(ctx *gin.Context) {
 	if err == nil {
 		RespOk(ctx, list)
 	} else {
-		RespErrorWithMsg(ctx, utils.UpdateDBErrorCode, err.Error(), nil)
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
+	}
+}
+
+func (mc *CategoryController) GetAppTabbarCategories(ctx *gin.Context) {
+	list, err := cs.GetAppCategories()
+	if err == nil {
+		RespOk(ctx, list)
+	} else {
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
+	}
+}
+func (mc *CategoryController) ModifyAppTabbarCategories(ctx *gin.Context) {
+	mp := make(map[string]string, 0)
+	err := ctx.BindJSON(&mp)
+	val := mp["value"]
+	err = cs.EditAppCategories(val)
+	if err == nil {
+		RespOk(ctx, nil)
+	} else {
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
 	}
 }
 

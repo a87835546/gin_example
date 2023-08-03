@@ -72,6 +72,8 @@ func InitRouter() *gin.Engine {
 		{
 			category := controllers.CategoryController{}
 			categoriesGroup.GET("/list", category.GetCategories)
+			categoriesGroup.GET("/app", category.GetAppTabbarCategories)
+			categoriesGroup.POST("/modify", category.ModifyAppTabbarCategories)
 			categoriesGroup.POST("/insert", category.InsertCategory)
 		}
 	}
