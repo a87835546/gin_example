@@ -19,8 +19,8 @@ func (ms *MenuService) GetMenus() (list []*models.MenuModel, err error) {
 	return
 }
 
-func (ms *MenuService) Update(p *param.MenuInsertReq) error {
-	err := logic.Db.Table("menu").Updates(p).Error
+func (ms *MenuService) Update(p *param.UpdateMenuReq) error {
+	err := logic.Db.Table("menu").Updates(p).Where("id", p.Id).Error
 	return err
 }
 func (ms *MenuService) Insert(p *param.MenuInsertReq) error {

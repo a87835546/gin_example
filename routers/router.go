@@ -62,6 +62,7 @@ func InitRouter() *gin.Engine {
 			billboardGroup.POST("/update", bill.UpdateBillboard)
 			billboardGroup.POST("/insert", bill.InsertBillboard)
 			billboardGroup.POST("/delete", bill.Delete)
+			billboardGroup.POST("/search", bill.SearchBillboard)
 		}
 
 		categoriesGroup := apiv1.Group("/category")

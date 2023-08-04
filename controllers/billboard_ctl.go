@@ -45,14 +45,30 @@ func (mc *BillboardController) InsertBillboard(ctx *gin.Context) {
 	}
 }
 func (mc *BillboardController) UpdateBillboard(ctx *gin.Context) {
-	req := param.InsertReq{}
+	req := param.UpdateBillboardReq{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
-		err = bs.Insert(&req)
+		err = bs.Update(&req)
 		if err == nil {
 			RespOk(ctx, nil)
+		} else {
+			RespErrorWithMsg(ctx, 210, err.Error(), nil)
+		}
+	}
+}
+
+func (mc *BillboardController) SearchBillboard(ctx *gin.Context) {
+	mp := make(map[string]string, 0)
+	ctx.BindJSON(&mp)
+	title, ok := mp["title"]
+	if !ok {
+		RespErrorWithMsg(ctx, utils.ParameterErrorCode, "获取参数异常", nil)
+	} else {
+		list, err := bs.Search(title)
+		if err == nil {
+			RespOk(ctx, list)
 		} else {
 			RespErrorWithMsg(ctx, 210, err.Error(), nil)
 		}

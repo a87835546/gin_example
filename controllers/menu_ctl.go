@@ -23,7 +23,7 @@ func (mc *MenuController) GetMenus(ctx *gin.Context) {
 }
 
 func (mc *MenuController) UpdateMenu(ctx *gin.Context) {
-	req := param.MenuInsertReq{}
+	req := param.UpdateMenuReq{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)

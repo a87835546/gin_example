@@ -27,11 +27,14 @@ func (bs *BillboardService) QueryByTitle(title string) (bill *models.Billboard, 
 	err = logic.Db.Table("billboard").Where("title=?", title).First(&bill).Error
 	return
 }
-func (bs *BillboardService) Update(billboard *param.InsertReq) (err error) {
-	err = logic.Db.Table("billboard").Updates(&billboard).Error
+func (bs *BillboardService) Update(billboard *param.UpdateBillboardReq) (err error) {
+	err = logic.Db.Table("billboard").Updates(&billboard).Where("id", billboard.Id).Error
 	return
 }
-
+func (bs *BillboardService) Search(title string) (list []*models.Billboard, err error) {
+	err = logic.Db.Table("billboard").Where("title", title).Find(&list).Error
+	return
+}
 func (bs *BillboardService) Delete(i int) (err error) {
 	err = logic.Db.Table("billboard").Where("id=?", i).Delete(models.Billboard{}).Error
 	return err
