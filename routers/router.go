@@ -74,6 +74,22 @@ func InitRouter() *gin.Engine {
 			categoriesGroup.POST("/delete", category.DeleteAppTabbarCategories)
 			categoriesGroup.POST("/insert", category.InsertCategory)
 		}
+
+		typeGroup := apiv1.Group("/type")
+		{
+			category := controllers.CategoryController{}
+			typeGroup.GET("/list", category.GetTypes)
+			typeGroup.POST("/modify", category.UpdateType)
+			typeGroup.POST("/insert", category.InsertType)
+		}
+
+		actorGroup := apiv1.Group("/actor")
+		{
+			category := controllers.ActorController{}
+			actorGroup.GET("/list", category.QueryAll)
+			actorGroup.POST("/modify", category.Update)
+			actorGroup.POST("/insert", category.Insert)
+		}
 	}
 	return r
 }

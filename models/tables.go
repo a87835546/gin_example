@@ -62,3 +62,14 @@ type AppCategoryModel struct {
 	Title string `json:"title" gorm:"title"`
 	Desc  string `json:"desc" gorm:"desc"`
 }
+type VideoTypeModel struct {
+	Id    int    `json:"id" gorm:"id"`
+	Title string `json:"title" gorm:"title"`
+	Desc  string `json:"desc" gorm:"desc"`
+}
+
+type ActorModel struct {
+	Id     int    `json:"id" gorm:"id"`
+	Name   string `json:"name" gorm:"name"`
+	Avatar string `json:"avatar" gorm:"avatar"`
+}

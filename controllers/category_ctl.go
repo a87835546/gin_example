@@ -98,3 +98,49 @@ func (mc *CategoryController) DeleteMenus(ctx *gin.Context) {
 		RespOk(ctx, nil)
 	}
 }
+
+func (mc *CategoryController) InsertType(ctx *gin.Context) {
+	req := models.VideoTypeModel{}
+	err := ctx.ShouldBindJSON(&req)
+	if err != nil {
+		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
+	} else {
+		m, err := cs.QueryByTitle(req.Title)
+		log.Printf("menu --->> %#v", m)
+		if m.Id != 0 {
+			RespErrorWithMsg(ctx, utils.InsertDBErrorCode, "插入数据异常已经存在", m)
+		} else {
+			err = cs.InsertType(&req)
+			if err == nil {
+				RespOk(ctx, nil)
+			} else {
+				RespErrorWithMsg(ctx, utils.UpdateDBErrorCode, err.Error(), nil)
+			}
+		}
+	}
+
+}
+
+func (mc *CategoryController) UpdateType(ctx *gin.Context) {
+	req := models.VideoTypeModel{}
+	err := ctx.ShouldBindJSON(&req)
+	if err != nil {
+		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
+	} else {
+		err = cs.UpdateType(&req)
+		if err == nil {
+			RespOk(ctx, nil)
+		} else {
+			RespErrorWithMsg(ctx, utils.UpdateDBErrorCode, err.Error(), nil)
+		}
+	}
+}
+
+func (mc *CategoryController) GetTypes(ctx *gin.Context) {
+	list, err := cs.Types()
+	if err == nil {
+		RespOk(ctx, list)
+	} else {
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
+	}
+}

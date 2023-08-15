@@ -19,19 +19,19 @@ func (ms *CategoryService) GetCategories() (list []*models.CategoryModel, err er
 }
 
 func (ms *CategoryService) GetAppCategories() (list []*models.AppCategoryModel, err error) {
-	db := logic.Db.Table("video_type").Find(&list).Group("index")
+	db := logic.Db.Table("video_category").Find(&list).Group("index")
 	return list, db.Error
 }
 
 func (ms *CategoryService) EditAppCategories(model *models.AppCategoryModel) (err error) {
-	db := logic.Db.Table("video_type").Updates(&model)
+	db := logic.Db.Table("video_category").Updates(&model)
 	if db.Error != nil || db.RowsAffected == 0 {
-		db = logic.Db.Table("video_type").Create(&model)
+		db = logic.Db.Table("video_category").Create(&model)
 	}
 	return db.Error
 }
 func (ms *CategoryService) DeleteAppCategories(id int) (err error) {
-	db := logic.Db.Table("video_type").Where("id", id).Delete(models.AppCategoryModel{})
+	db := logic.Db.Table("video_category").Where("id", id).Delete(models.AppCategoryModel{})
 	return db.Error
 }
 func (ms *CategoryService) Update(p *models.CategoryModel) error {
@@ -48,5 +48,23 @@ func (ms *CategoryService) Delete(id int) error {
 }
 func (ms *CategoryService) QueryByTitle(title string) (m *models.CategoryModel, err error) {
 	err = logic.Db.Debug().Table("category").Where("title=?", title).First(&m).Error
+	return
+}
+
+func (ms *CategoryService) UpdateType(p *models.VideoTypeModel) error {
+	err := logic.Db.Table("video_type").Updates(p).Error
+	return err
+}
+func (ms *CategoryService) InsertType(p *models.VideoTypeModel) error {
+	err := logic.Db.Table("video_type").Create(p).Error
+	return err
+}
+func (ms *CategoryService) Types() (list []*models.VideoTypeModel, err error) {
+	rows, err := logic.Db.Table("video_type").Rows()
+	for rows.Next() {
+		var l *models.VideoTypeModel
+		logic.Db.ScanRows(rows, &l)
+		list = append(list, l)
+	}
 	return
 }
