@@ -28,7 +28,7 @@ func (bs *BillboardService) QueryByTitle(title string) (bill *models.Billboard, 
 	return
 }
 func (bs *BillboardService) Update(billboard *param.UpdateBillboardReq) (err error) {
-	err = logic.Db.Table("billboard").Updates(&billboard).Where("id", billboard.Id).Error
+	err = logic.Db.Debug().Table("billboard").Updates(&billboard).Where("id", billboard.Id).Error
 	return
 }
 func (bs *BillboardService) Search(title string) (list []*models.Billboard, err error) {

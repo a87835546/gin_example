@@ -30,6 +30,7 @@ type MenuModel struct {
 	Id        int       `json:"id" db:"id"`
 	Desc      string    `json:"desc"`
 	Title     string    `json:"title"`
+	TitleEn   string    `json:"title_en" gorm:"title_en"`
 	Role      int       `json:"role"`
 	Position  int       `json:"position"`
 	CreatedAt time.Time `json:"created_at" gorm:"created_at"`
@@ -41,30 +42,36 @@ type Billboard struct {
 	Url        string    `json:"url" gorm:"url"`
 	Desc       string    `json:"desc"`
 	Author     string    `json:"author"`
+	Duration   int       `json:"duration"`
+	Rate       string    `json:"rate"`
+	Years      int       `json:"years"`
 	Title      string    `json:"title" gorm:"title"`
-	Type       string    `json:"types"`
+	Type       string    `json:"types" gorm:"column:types"`
 	Actor      string    `json:"actor"`
 	ThemeUrl   string    `json:"theme_url" gorm:"column:theme_url"`
-	CategoryId int       `json:"category_id" gorm:"category_id"`
+	CategoryId string    `json:"category_id" gorm:"category_id"`
 	CreatedAt  string    `json:"created_at" gorm:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at" gorm:"updated_at"`
 }
 
 type CategoryModel struct {
-	Id        int64     `json:"id" gorm:"id"`
-	CreatedAt int64     `json:"created_at" gorm:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" gorm:"updated_at"`
-	Title     string    `json:"title" gorm:"title"`
-	Desc      string    `json:"desc" gorm:"column:desc"`
-	Index     int64     `json:"index" gorm:"column:index"`
-	SuperId   string    `json:"super_id" gorm:"column:super_id"`
+	Id         int64     `json:"id" gorm:"id"`
+	CreatedAt  int64     `json:"created_at" gorm:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at" gorm:"updated_at"`
+	Title      string    `json:"title" gorm:"title"`
+	TitleEn    string    `json:"title_en" gorm:"title_en"`
+	Desc       string    `json:"desc" gorm:"column:desc"`
+	Index      int64     `json:"index" gorm:"column:index"`
+	SuperTitle string    `json:"super_title" gorm:"column:super_title"`
 }
 
 type AppCategoryModel struct {
-	Id    int    `json:"id" gorm:"id"`
-	Index int    `json:"index" gorm:"index"`
-	Title string `json:"title" gorm:"title"`
-	Desc  string `json:"desc" gorm:"desc"`
+	Id         int    `json:"id" gorm:"id"`
+	Index      int    `json:"index" gorm:"index"`
+	Title      string `json:"title" gorm:"title"`
+	TitleEn    string `json:"title_en" gorm:"title_en"`
+	Desc       string `json:"desc" gorm:"desc"`
+	SuperTitle string `json:"super_title" gorm:"column:super_title"`
 }
 type VideoTypeModel struct {
 	Id     int    `json:"id" gorm:"id"`
@@ -73,7 +80,8 @@ type VideoTypeModel struct {
 }
 
 type ActorModel struct {
-	Id     int    `json:"id" gorm:"id"`
-	Name   string `json:"name" gorm:"name"`
-	Avatar string `json:"avatar" gorm:"avatar"`
+	Id        int    `json:"id" gorm:"id"`
+	Name      string `json:"name" gorm:"name"`
+	NameEn    string `json:"name_en" gorm:"name_en"`
+	AvatarUrl string `json:"avatar_url" gorm:"avatar_url"`
 }

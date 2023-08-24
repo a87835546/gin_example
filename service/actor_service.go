@@ -3,6 +3,7 @@ package service
 import (
 	"gin_example/logic"
 	"gin_example/models"
+	"log"
 )
 
 type ActorService struct {
@@ -18,7 +19,15 @@ func (as *ActorService) Insert(p *models.ActorModel) error {
 }
 
 func (as *ActorService) QueryAll() (list []*models.ActorModel, err error) {
-	//rows,err := logic.Db.Table("actor").Find().Rows()
+	rows, err := logic.Db.Table("actor").Rows()
+	for rows.Next() {
+		var l *models.ActorModel
+		err = logic.Db.ScanRows(rows, &l)
+		if err != nil {
+			log.Println(err)
+		}
+		list = append(list, l)
+	}
 	return
 }
 

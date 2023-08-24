@@ -3,14 +3,28 @@ package service
 import (
 	"gin_example/logic"
 	"gin_example/models"
+	"log"
 	"time"
 )
 
 type CategoryService struct {
 }
 
-func (ms *CategoryService) GetCategories(id any) (list []*models.CategoryModel, err error) {
-	rows, err := logic.Db.Table("video_category").Where("super_id=?", id).Rows()
+func (ms *CategoryService) GetCategories() (list []*models.CategoryModel, err error) {
+	rows, err := logic.Db.Debug().Table("video_category").Rows()
+	for rows.Next() {
+		var l *models.CategoryModel
+		err = logic.Db.ScanRows(rows, &l)
+		if err != nil {
+			log.Println(err)
+		}
+		list = append(list, l)
+	}
+	return
+}
+
+func (ms *CategoryService) GetCategoriesBySuperId(id any) (list []*models.CategoryModel, err error) {
+	rows, err := logic.Db.Table("video_category").Where("super_title=?", id).Rows()
 	for rows.Next() {
 		var l *models.CategoryModel
 		err = logic.Db.ScanRows(rows, &l)
@@ -20,16 +34,16 @@ func (ms *CategoryService) GetCategories(id any) (list []*models.CategoryModel, 
 }
 
 func (ms *CategoryService) GetAppCategories() (list []*models.AppCategoryModel, err error) {
-	db := logic.Db.Table("video_category").Where("super_id=?", 0).Find(&list).Group("index")
+	db := logic.Db.Table("video_category").Where("super_title=?", "").Find(&list).Group("index")
 	return list, db.Error
 }
 
 func (ms *CategoryService) EditAppCategories(model *models.AppCategoryModel) (err error) {
-	db := logic.Db.Table("video_category").Updates(&model)
-	if db.Error != nil || db.RowsAffected == 0 {
-		db = logic.Db.Table("video_category").Create(&model)
+	err = logic.Db.Table("video_category").Updates(model).Error
+	if err != nil {
+		err = logic.Db.Table("video_category").Create(model).Error
 	}
-	return db.Error
+	return
 }
 func (ms *CategoryService) DeleteAppCategories(id int) (err error) {
 	db := logic.Db.Table("video_category").Where("id", id).Delete(models.AppCategoryModel{})

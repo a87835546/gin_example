@@ -28,7 +28,7 @@ func (mc *CategoryController) GetSubCategories(ctx *gin.Context) {
 		if !ok {
 			id = 0
 		}
-		list, err := cs.GetCategories(id)
+		list, err := cs.GetCategoriesBySuperId(id)
 		if err == nil {
 			RespOk(ctx, list)
 		} else {
@@ -49,7 +49,7 @@ func GetJsonData(c *gin.Context) {
 	c.JSON(http.StatusOK, jsonData)
 }
 func (mc *CategoryController) GetCategories(ctx *gin.Context) {
-	list, err := cs.GetCategories(0)
+	list, err := cs.GetCategories()
 	if err == nil {
 		RespOk(ctx, list)
 	} else {
