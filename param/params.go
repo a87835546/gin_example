@@ -6,6 +6,8 @@ type InsertReq struct {
 	Desc       string `json:"desc" binding:"required"`
 	Author     string `json:"author"`
 	ThemeUrl   string `json:"theme_url"`
+	Types      string `json:"types"`
+	Actor      string `json:"actor"`
 	CategoryId int    `json:"category_id"`
 }
 

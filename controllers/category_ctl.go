@@ -1,11 +1,15 @@
 package controllers
 
 import (
+	"encoding/json"
+	"fmt"
 	"gin_example/models"
 	"gin_example/service"
 	"gin_example/utils"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"log"
+	"net/http"
 )
 
 type CategoryController struct {
@@ -13,15 +17,45 @@ type CategoryController struct {
 
 var cs = service.CategoryService{}
 
+func (mc *CategoryController) GetSubCategories(ctx *gin.Context) {
+	//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
+	mp := make(map[string]any, 0)
+	err := ctx.ShouldBind(&mp)
+	if err != nil {
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
+	} else {
+		id, ok := mp["id"]
+		if !ok {
+			id = 0
+		}
+		list, err := cs.GetCategories(id)
+		if err == nil {
+			RespOk(ctx, list)
+		} else {
+			RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
+		}
+	}
+}
+func GetJsonData(c *gin.Context) {
+	data, _ := ioutil.ReadAll(c.Request.Body)
+	fmt.Println(string(data))
+
+	var jsonData map[string]any // map[string]interface{}
+	data, _ = ioutil.ReadAll(c.Request.Body)
+	if e := json.Unmarshal(data, &jsonData); e != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"msg": e.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, jsonData)
+}
 func (mc *CategoryController) GetCategories(ctx *gin.Context) {
-	list, err := cs.GetCategories()
+	list, err := cs.GetCategories(0)
 	if err == nil {
 		RespOk(ctx, list)
 	} else {
 		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
 	}
 }
-
 func (mc *CategoryController) GetAppTabbarCategories(ctx *gin.Context) {
 	list, err := cs.GetAppCategories()
 	if err == nil || len(list) == 0 {
@@ -137,7 +171,7 @@ func (mc *CategoryController) UpdateType(ctx *gin.Context) {
 }
 
 func (mc *CategoryController) GetTypes(ctx *gin.Context) {
-	list, err := cs.Types()
+	list, err := cs.TypesBySuperId()
 	if err == nil {
 		RespOk(ctx, list)
 	} else {

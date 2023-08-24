@@ -22,7 +22,7 @@ func InitRouter() *gin.Engine {
 	//log.SetOutput(f)
 	//r.Use(gin.LoggerWithWriter(f))
 	r.Use(gin.Recovery())
-	r.Use(doreamon.JWTAuth())
+	//r.Use(doreamon.JWTAuth())
 	//gin.DefaultWriter = io.MultiWriter(f)
 
 	//r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -37,6 +37,7 @@ func InitRouter() *gin.Engine {
 		usergroup := apiv1.Group("/user")
 		{
 			user := controllers.UserCtl{}
+			usergroup.Use(doreamon.JWTAuth())
 			usergroup.POST("/add", user.AddUsers)
 			usergroup.POST("/login", user.Login)
 			usergroup.GET("/info", user.GetUser)
@@ -68,9 +69,11 @@ func InitRouter() *gin.Engine {
 		categoriesGroup := apiv1.Group("/category")
 		{
 			category := controllers.CategoryController{}
-			categoriesGroup.GET("/list", category.GetCategories)
+			categoriesGroup.POST("/list", category.GetCategories)
+			categoriesGroup.POST("/queryList", category.GetSubCategories)
 			categoriesGroup.GET("/app", category.GetAppTabbarCategories)
 			categoriesGroup.POST("/modify", category.ModifyAppTabbarCategories)
+			categoriesGroup.POST("/update", category.Update)
 			categoriesGroup.POST("/delete", category.DeleteAppTabbarCategories)
 			categoriesGroup.POST("/insert", category.InsertCategory)
 		}

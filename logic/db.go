@@ -11,7 +11,7 @@ import (
 
 const (
 	dbUser     string = "root"
-	dbPassword string = "123456"
+	dbPassword string = "12345678"
 	dbHost     string = "127.0.0.1"
 	dbPort     int    = 3306
 	dbName     string = "demo"

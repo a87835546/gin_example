@@ -3,7 +3,7 @@ package models
 import "time"
 
 type User struct {
-	Username  string    `json:"username"`
+	Username  string    `json:"username" gorm:"colum:username"`
 	Password  string    `json:"password"`
 	Id        int       `json:"id"`
 	Role      int       `json:"role"`
@@ -42,6 +42,8 @@ type Billboard struct {
 	Desc       string    `json:"desc"`
 	Author     string    `json:"author"`
 	Title      string    `json:"title" gorm:"title"`
+	Type       string    `json:"types"`
+	Actor      string    `json:"actor"`
 	ThemeUrl   string    `json:"theme_url" gorm:"column:theme_url"`
 	CategoryId int       `json:"category_id" gorm:"category_id"`
 	CreatedAt  string    `json:"created_at" gorm:"created_at"`
@@ -50,10 +52,12 @@ type Billboard struct {
 
 type CategoryModel struct {
 	Id        int64     `json:"id" gorm:"id"`
-	CreatedAt string    `json:"created_at" gorm:"created_at"`
+	CreatedAt int64     `json:"created_at" gorm:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"updated_at"`
 	Title     string    `json:"title" gorm:"title"`
-	Author    string    `json:"author" gorm:"column:operation_name"`
+	Desc      string    `json:"desc" gorm:"column:desc"`
+	Index     int64     `json:"index" gorm:"column:index"`
+	SuperId   string    `json:"super_id" gorm:"column:super_id"`
 }
 
 type AppCategoryModel struct {
@@ -63,9 +67,9 @@ type AppCategoryModel struct {
 	Desc  string `json:"desc" gorm:"desc"`
 }
 type VideoTypeModel struct {
-	Id    int    `json:"id" gorm:"id"`
-	Title string `json:"title" gorm:"title"`
-	Desc  string `json:"desc" gorm:"desc"`
+	Id     int    `json:"id" gorm:"id"`
+	Title  string `json:"title" gorm:"title"`
+	Author string `json:"author" gorm:"column:author"`
 }
 
 type ActorModel struct {
