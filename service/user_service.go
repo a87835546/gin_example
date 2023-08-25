@@ -64,9 +64,9 @@ func (us *UserService) AppQueryUserByName(username string) (user *models.User, e
 func (us *UserService) AppCreate(user *models.AppUserRegisterReq) (u *models.User, err error) {
 	res := us.appDb.Debug().Omit("username", "password", "ip", "device_type").Create(user)
 	if res.Error != nil {
-		log.Println("插入数据异常吗", err.Error())
+		log.Println("插入数据异常吗", res.Error.Error())
 	} else {
 		u, err = us.AppQueryUserByName(user.Username)
 	}
-	return
+	return u, res.Error
 }

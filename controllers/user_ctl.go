@@ -96,8 +96,6 @@ func (uc *UserCtl) AppCreateUser(ctx *gin.Context) {
 		user, err := uc.us.AppCreate(&req)
 		if err != nil {
 			RespErrorWithMsg(ctx, utils.InsertDBErrorCode, err.Error(), nil)
-		} else if user.Password != req.Password {
-			RespErrorWithMsg(ctx, utils.LoginPasswordErrorCode, "password is wrong", nil)
 		} else {
 			generateToken(ctx, user)
 		}
