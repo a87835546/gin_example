@@ -20,7 +20,6 @@ func (ac *ActorController) QueryAll(ctx *gin.Context) {
 	} else {
 		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
 	}
-	RespOk(ctx, nil)
 }
 
 func (ac *ActorController) Insert(ctx *gin.Context) {

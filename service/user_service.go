@@ -32,7 +32,7 @@ func (us *UserService) GetUser() (user *models.User) {
 	return
 }
 func (us *UserService) InsertUser(user *models.User) bool {
-	_db := logic.Db.Create(user)
+	_db := logic.Db.Table("user").Create(user)
 	if _db.Error != nil {
 		log.Println("插入数据异常吗", _db.Error.Error())
 	}
