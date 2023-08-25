@@ -34,17 +34,26 @@ func InitRouter() *gin.Engine {
 				"message": "pong",
 			})
 		})
+		admingroup := apiv1.Group("/admin")
+		{
+			user := controllers.NewUserCtl()
+			admingroup.Use(doreamon.JWTAuth())
+			admingroup.POST("/add", user.AddUsers)
+			admingroup.POST("/login", user.Login)
+			admingroup.GET("/info", user.GetUser)
+			admingroup.POST("/logout", user.Logout)
+			admingroup.GET("/get", user.GetUsers)
+			admingroup.GET("/test", user.FetchDataFromPron)
+			admingroup.GET("/upload", user.Upload)
+		}
+
 		usergroup := apiv1.Group("/user")
 		{
-			user := controllers.UserCtl{}
+			user := controllers.NewUserCtl()
 			usergroup.Use(doreamon.JWTAuth())
-			usergroup.POST("/add", user.AddUsers)
-			usergroup.POST("/login", user.Login)
-			usergroup.GET("/info", user.GetUser)
-			usergroup.POST("/logout", user.Logout)
-			usergroup.GET("/get", user.GetUsers)
-			usergroup.GET("/test", user.FetchDataFromPron)
-			usergroup.GET("/upload", user.Upload)
+			usergroup.POST("/login", user.AppUserLogin)
+			usergroup.POST("/register", user.AppCreateUser)
+			usergroup.GET("/info", user.AppGetUser)
 		}
 
 		menug := apiv1.Group("/menu")
@@ -64,6 +73,8 @@ func InitRouter() *gin.Engine {
 			billboardGroup.POST("/insert", bill.InsertBillboard)
 			billboardGroup.POST("/delete", bill.Delete)
 			billboardGroup.POST("/search", bill.SearchBillboard)
+			billboardGroup.POST("/queryList", bill.GetListByCategory)
+
 		}
 
 		categoriesGroup := apiv1.Group("/category")
@@ -92,6 +103,15 @@ func InitRouter() *gin.Engine {
 			actorGroup.GET("/list", category.QueryAll)
 			actorGroup.POST("/modify", category.Update)
 			actorGroup.POST("/insert", category.Insert)
+		}
+
+		favoriteGroup := apiv1.Group("/favorite")
+		{
+			fav := controllers.NewFavoriteController()
+			favoriteGroup.GET("/queryByUserId", fav.QueryByUserId)
+			favoriteGroup.GET("/queryByUserIdAndVideoId", fav.QueryByUserId)
+			favoriteGroup.POST("/cancel", fav.Cancel)
+			favoriteGroup.POST("/insert", fav.Add)
 		}
 	}
 	return r

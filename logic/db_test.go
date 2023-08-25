@@ -9,10 +9,16 @@ import (
 	"time"
 )
 
+type Time struct {
+	CreatedAt time.Time `json:"created_at" gorm:"colum:created_at"`
+	UpdatedAt string    `json:"updated_at"`
+}
 type test struct {
-	Id       string  `json:"id,omitempty"`
-	Name     string  `json:"name,omitempty" json:"name,omitempty"`
-	Password *string `json:"password"`
+	Id       string `json:"id,omitempty"`
+	Name     string `json:"name,omitempty"`
+	Password string `json:"password"`
+	//gorm.Model
+	Time `json:"time"`
 }
 
 func TestA(t *testing.T) {
@@ -44,7 +50,7 @@ func TestB(t *testing.T) {
 	wg := sync.WaitGroup{}
 	InitDb()
 	temp := make([]int, 0)
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 10; i++ {
 		index := rand.Intn(10000000)
 		temp = append(temp, index)
 	}
@@ -56,5 +62,5 @@ func TestB(t *testing.T) {
 	}
 	wg.Wait()
 	log.Printf("time-->>%s\n", time.Since(now))
-	log.Printf("time-->>%#v\n", users)
+	log.Printf("time-->>%#v\n", users[0])
 }

@@ -3,6 +3,31 @@ package models
 import "time"
 
 type User struct {
+	Username   string    `json:"username" gorm:"colum:username"`
+	Password   string    `json:"-"`
+	Id         int       `json:"id"`
+	DeviceType int       `json:"device_type"`
+	Ip         string    `json:"-"`
+	CreatedAt  time.Time `json:"-" gorm:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at" gorm:"updated_at"`
+}
+
+type AppUserRegisterReq struct {
+	Username   string `json:"username" `
+	Password   string `json:"password"`
+	DeviceType int    `json:"device_type"`
+	Ip         string `json:"ip"`
+}
+
+type Favorite struct {
+	UserId    int       `json:"user_id"`
+	VideoId   int64     `json:"video_id"`
+	Id        int       `json:"id"`
+	CreatedAt time.Time `json:"created_at" gorm:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"updated_at"`
+}
+
+type Admin struct {
 	Username  string    `json:"username" gorm:"colum:username"`
 	Password  string    `json:"password"`
 	Id        int       `json:"id"`

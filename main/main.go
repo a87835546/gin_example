@@ -13,12 +13,12 @@ func main() {
 			fmt.Println(err)
 		}
 	}()
-	app := routers.InitRouter()
 	logic.InitDb()
 	err := logic.InitRedis()
 	if err != nil {
 		return
 	}
+	app := routers.InitRouter()
 	err = app.Run(":8080")
 	if err != nil {
 		return

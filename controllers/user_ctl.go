@@ -16,22 +16,32 @@ import (
 	"time"
 )
 
-var us = service.UserService{}
-
 type UserLoginReq struct {
 	Username string
 	Password string
 }
-type UserCtl struct {
-	mu sync.RWMutex
+
+type AppUserLoginReq struct {
+	UserLoginReq
+	DeviceType int8 `json:"device_type"`
 }
 
+type UserCtl struct {
+	mu sync.RWMutex
+	us *service.UserService
+}
+
+func NewUserCtl() *UserCtl {
+	return &UserCtl{
+		us: service.NewUserService(),
+	}
+}
 func (uc *UserCtl) GetUsers(ctx *gin.Context) {
-	ctx.JSON(200, us.GetUsers())
+	ctx.JSON(200, uc.us.GetUsers())
 }
 func (uc *UserCtl) GetUserById(ctx *gin.Context) {
 	if id, ok := ctx.Get("id"); ok {
-		user, err := us.QueryUserById(id.(string))
+		user, err := uc.us.QueryUserById(id.(string))
 		if err != nil {
 			RespError(ctx, 201, err.Error())
 		} else {
@@ -42,11 +52,7 @@ func (uc *UserCtl) GetUserById(ctx *gin.Context) {
 func (uc *UserCtl) GetUser(ctx *gin.Context) {
 	if user, ok := ctx.Get("claims"); ok {
 		log.Println("user-->>", user)
-		//if err != nil {
-		//	RespError(ctx, 201, err.Error())
-		//} else {
 		RespOk(ctx, user)
-		//}
 	} else {
 		RespErrorWithMsg(ctx, utils.UnknownErrorCode, "unknown error", nil)
 	}
@@ -55,7 +61,7 @@ func (uc *UserCtl) Login(ctx *gin.Context) {
 	req := UserLoginReq{}
 	ctx.BindJSON(&req)
 	log.Println("req--->>>", req)
-	user, err := us.QueryUserByName(req.Username)
+	user, err := uc.us.QueryUserByName(req.Username)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.InsertDBErrorCode, err.Error(), nil)
 	} else if user.Password != req.Password {
@@ -64,17 +70,62 @@ func (uc *UserCtl) Login(ctx *gin.Context) {
 		generateToken(ctx, user)
 	}
 }
+
+func (uc *UserCtl) AppUserLogin(ctx *gin.Context) {
+	req := AppUserLoginReq{}
+	ctx.BindJSON(&req)
+	log.Println("req--->>>", req)
+	user, err := uc.us.AppQueryUserByName(req.Username)
+	if err != nil {
+		RespErrorWithMsg(ctx, utils.InsertDBErrorCode, err.Error(), nil)
+	} else if user.Password != req.Password {
+		RespErrorWithMsg(ctx, utils.LoginPasswordErrorCode, "password is wrong", nil)
+	} else {
+		uc.us.AppUpdateIp(ctx.ClientIP())
+		generateToken(ctx, user)
+	}
+}
+
+func (uc *UserCtl) AppCreateUser(ctx *gin.Context) {
+	req := models.AppUserRegisterReq{}
+	ctx.BindJSON(&req)
+	req.Ip = ctx.ClientIP()
+	log.Println("req--->>>", req)
+	user, err := uc.us.AppQueryUserByName(req.Username)
+	if err != nil || user.Id == 0 {
+		user, err := uc.us.AppCreate(&req)
+		if err != nil {
+			RespErrorWithMsg(ctx, utils.InsertDBErrorCode, err.Error(), nil)
+		} else if user.Password != req.Password {
+			RespErrorWithMsg(ctx, utils.LoginPasswordErrorCode, "password is wrong", nil)
+		} else {
+			generateToken(ctx, user)
+		}
+	} else {
+		RespError(ctx, utils.UnknownErrorCode, "account was exists")
+	}
+}
+
+func (uc *UserCtl) AppGetUser(ctx *gin.Context) {
+	if user, ok := ctx.Get("claims"); ok {
+		log.Println("user-->>", user)
+		RespOk(ctx, user)
+	} else {
+		RespErrorWithMsg(ctx, utils.UnknownErrorCode, "unknown error", nil)
+	}
+}
+
 func (uc *UserCtl) Logout(ctx *gin.Context) {
-	ctx.JSON(200, us.GetUsers())
+	ctx.JSON(200, uc.us.GetUsers())
 }
 func (uc *UserCtl) AddUsers(ctx *gin.Context) {
-	user := models.User{}
+	user := models.Admin{}
 	if err := ctx.BindJSON(&user); err != nil {
 		ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	log.Println("user 请求", user)
-	ctx.JSON(200, us.InsertUser(&user))
+	ctx.JSON(200, uc.us.InsertUser(&user))
 }
 
 func (uc *UserCtl) Upload(ctx *gin.Context) {

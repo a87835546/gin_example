@@ -55,6 +55,31 @@ create table user
     role       int       default 1                 null
 );
 
+create table admin
+(
+    id         int auto_increment
+        primary key,
+    username   varchar(255)                        null,
+    password   varchar(255)                        null,
+    created_at timestamp default CURRENT_TIMESTAMP null,
+    updated_at timestamp default CURRENT_TIMESTAMP null,
+    role       int       default 1                 null
+);
+create table favorite
+(
+    id         int auto_increment
+        primary key,
+    user_id    int                                 not null,
+    video_id   bigint    default (0)               not null,
+    created_at timestamp default CURRENT_TIMESTAMP not null,
+    constraint FK_favorite_billboard
+        foreign key (video_id) references billboard (id),
+    constraint FK_favorite_user
+        foreign key (user_id) references user (id)
+)
+    comment '收藏的电影';
+
+
 create table video_category
 (
     id          int auto_increment

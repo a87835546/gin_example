@@ -21,6 +21,21 @@ func (mc *BillboardController) GetList(ctx *gin.Context) {
 		RespErrorWithMsg(ctx, 210, err.Error(), nil)
 	}
 }
+func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
+	mp := make(map[string]string)
+	ctx.BindJSON(&mp)
+	title, ok := mp["title"]
+	if !ok {
+		RespErrorWithMsg(ctx, utils.ParameterErrorCode, "获取参数异常", nil)
+	} else {
+		list, err := bs.QueryByCategory(title)
+		if err == nil {
+			RespOk(ctx, list)
+		} else {
+			RespErrorWithMsg(ctx, 210, err.Error(), nil)
+		}
+	}
+}
 
 func (mc *BillboardController) InsertBillboard(ctx *gin.Context) {
 	req := param.InsertReq{}
@@ -60,7 +75,7 @@ func (mc *BillboardController) UpdateBillboard(ctx *gin.Context) {
 }
 
 func (mc *BillboardController) SearchBillboard(ctx *gin.Context) {
-	mp := make(map[string]string, 0)
+	mp := make(map[string]string)
 	ctx.BindJSON(&mp)
 	title, ok := mp["title"]
 	if !ok {

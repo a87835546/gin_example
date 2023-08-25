@@ -39,3 +39,7 @@ func (bs *BillboardService) Delete(i int) (err error) {
 	err = logic.Db.Table("billboard").Where("id=?", i).Delete(models.Billboard{}).Error
 	return err
 }
+func (bs *BillboardService) QueryByCategory(title string) (bill *models.Billboard, err error) {
+	err = logic.Db.Table("billboard").Where("category_id=?", title).First(&bill).Error
+	return
+}
