@@ -46,14 +46,17 @@ create table menu
 
 create table user
 (
-    id         int auto_increment
+    id          int auto_increment
         primary key,
-    username   varchar(255)                        null,
-    password   varchar(255)                        null,
-    created_at timestamp default CURRENT_TIMESTAMP null,
-    updated_at timestamp default CURRENT_TIMESTAMP null,
-    role       int       default 1                 null
+    username    varchar(255)                        null,
+    password    varchar(255)                        null,
+    created_at  timestamp default CURRENT_TIMESTAMP null,
+    updated_at  timestamp default CURRENT_TIMESTAMP null,
+    ip          varchar(100)                        not null comment 'last login ip address',
+    device_type tinyint   default 0                 not null comment '设备类型 1 -- ios 2 --- android 0 --- others'
 );
+
+
 
 create table admin
 (
