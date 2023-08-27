@@ -17,8 +17,8 @@ import (
 )
 
 type UserLoginReq struct {
-	Username string
-	Password string
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
 }
 
 type AppUserLoginReq struct {
@@ -73,22 +73,31 @@ func (uc *UserCtl) Login(ctx *gin.Context) {
 
 func (uc *UserCtl) AppUserLogin(ctx *gin.Context) {
 	req := AppUserLoginReq{}
-	ctx.BindJSON(&req)
+	err := ctx.BindJSON(&req)
+	if err != nil {
+		log.Println("err--->>>", err)
+	}
 	log.Println("req--->>>", req)
 	user, err := uc.us.AppQueryUserByName(req.Username)
 	if err != nil {
-		RespErrorWithMsg(ctx, utils.InsertDBErrorCode, err.Error(), nil)
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
 	} else if user.Password != req.Password {
 		RespErrorWithMsg(ctx, utils.LoginPasswordErrorCode, "password is wrong", nil)
 	} else {
-		uc.us.AppUpdateIp(ctx.ClientIP())
+		err := uc.us.AppUpdateIp(req.Username, ctx.ClientIP())
+		if err != nil {
+			return
+		}
 		generateToken(ctx, user)
 	}
 }
 
 func (uc *UserCtl) AppCreateUser(ctx *gin.Context) {
 	req := models.AppUserRegisterReq{}
-	ctx.BindJSON(&req)
+	err := ctx.BindJSON(&req)
+	if err != nil {
+		return
+	}
 	req.Ip = ctx.ClientIP()
 	log.Println("req--->>>", req)
 	user, err := uc.us.AppQueryUserByName(req.Username)

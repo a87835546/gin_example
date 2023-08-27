@@ -19,12 +19,12 @@ func NewUserService() *UserService {
 	}
 }
 func (us *UserService) QueryUserByName(username string) (user *models.User, err error) {
-	tx := us.adminDb.First(&user, "username=?", username)
+	tx := logic.Db.Debug().Table("admin").First(&user, "username=?", username)
 	err = tx.Error
 	return user, err
 }
 func (us *UserService) QueryUserById(username string) (user *models.Admin, err error) {
-	tx := us.adminDb.First(&user, "id=?", username)
+	tx := logic.Db.Debug().Table("admin").First(&user, "id=?", username)
 	err = tx.Error
 	return user, err
 }
@@ -41,32 +41,33 @@ func (us *UserService) GetUser() (user *models.Admin) {
 	return
 }
 func (us *UserService) InsertUser(user *models.Admin) bool {
-	_db := us.adminDb.Create(user)
+	_db := logic.Db.Debug().Table("admin").Create(user)
 	if _db.Error != nil {
 		log.Println("插入数据异常吗", _db.Error.Error())
 	}
 	return true
 }
-func (us *UserService) AppUpdateIp(ip string) (err error) {
-	err = us.appDb.Update("ip=?", ip).Error
+func (us *UserService) AppUpdateIp(username, ip string) (err error) {
+	err = logic.Db.Table("user").Where("username=?", username).Update("ip", ip).Error
 	if err != nil {
 		log.Println("update ip err", err)
 	}
 	return
 }
 func (us *UserService) AppQueryUserByName(username string) (user *models.User, err error) {
-	err = us.appDb.First(&user, "username=?", username).Error
+	err = logic.Db.Table("user").First(&user, "username=?", username).Error
 	if err != nil {
 		log.Println("query user by name err", err)
 	}
 	return
 }
 func (us *UserService) AppCreate(user *models.AppUserRegisterReq) (u *models.User, err error) {
-	res := us.appDb.Debug().Omit("username", "password", "ip", "device_type").Create(user)
-	if res.Error != nil {
-		log.Println("插入数据异常吗", res.Error.Error())
+
+	err = logic.Db.Table("user").Create(&models.User{Username: user.Username, Password: user.Password, Ip: user.Password, DeviceType: user.DeviceType}).Error
+	if err != nil {
+		log.Println("插入数据异常--->>", err.Error())
 	} else {
 		u, err = us.AppQueryUserByName(user.Username)
 	}
-	return u, res.Error
+	return
 }
