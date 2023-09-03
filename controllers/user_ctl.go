@@ -128,7 +128,7 @@ func (uc *UserCtl) Logout(ctx *gin.Context) {
 func (uc *UserCtl) AddUsers(ctx *gin.Context) {
 	user := models.Admin{}
 	if err := ctx.BindJSON(&user); err != nil {
-		ctx.AbortWithError(http.StatusBadRequest, err)
+		err = ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	log.Println("user 请求", user)

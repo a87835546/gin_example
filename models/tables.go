@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type User struct {
 	Username   string    `json:"username" gorm:"colum:username"`
@@ -109,4 +111,12 @@ type ActorModel struct {
 	Name      string `json:"name" gorm:"name"`
 	NameEn    string `json:"name_en" gorm:"name_en"`
 	AvatarUrl string `json:"avatar_url" gorm:"avatar_url"`
+}
+
+type WatchListModel struct {
+	Id        int       `json:"id" gorm:"id"`
+	VideoId   int64     `json:"video_id" gorm:"column:video_id"`
+	UserId    int       `json:"user_id" gorm:"column:user_id"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"updated_at"`
+	CreatedAt time.Time `json:"created_at" gorm:"created_at"`
 }

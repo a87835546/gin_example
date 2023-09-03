@@ -80,7 +80,7 @@ func InitRouter() *gin.Engine {
 		categoriesGroup := apiv1.Group("/category")
 		{
 			category := controllers.CategoryController{}
-			categoriesGroup.GET("/list", category.GetCategories)
+			categoriesGroup.POST("/list", category.GetCategories)
 			categoriesGroup.POST("/queryList", category.GetSubCategories)
 			categoriesGroup.GET("/app", category.GetAppTabbarCategories)
 			categoriesGroup.POST("/modify", category.ModifyAppTabbarCategories)
@@ -112,6 +112,12 @@ func InitRouter() *gin.Engine {
 			favoriteGroup.GET("/queryByUserIdAndVideoId", fav.QueryByUserId)
 			favoriteGroup.POST("/cancel", fav.Cancel)
 			favoriteGroup.POST("/insert", fav.Add)
+		}
+		watchGroup := apiv1.Group("/watch")
+		{
+			wc := controllers.NewWatchController()
+			watchGroup.GET("/list", wc.GetListByUserId)
+			watchGroup.POST("/add", wc.AddWatch)
 		}
 	}
 	return r

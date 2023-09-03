@@ -31,3 +31,18 @@ type MenuInsertReq struct {
 	Position int    `json:"position,omitempty"UpdateMenuReq`
 	Status   int    `json:"status"`
 }
+type WatchListResp struct {
+	VideoId  int64  `json:"video_id" gorm:"column:video_id"`
+	UserId   int    `json:"user_id" gorm:"column:user_id"`
+	Author   string `json:"author"`
+	Duration int    `json:"duration"`
+	Rate     string `json:"rate"`
+	Years    int    `json:"years"`
+	Title    string `json:"title" gorm:"title"`
+	Actor    string `json:"actor"`
+	ThemeUrl string `json:"theme_url" gorm:"column:theme_url"`
+}
+type AddWatchReq struct {
+	VideoId int64 `json:"video_id" gorm:"column:video_id"`
+	UserId  int   `json:"user_id" gorm:"column:user_id"`
+}
