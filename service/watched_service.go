@@ -2,6 +2,7 @@ package service
 
 import (
 	"gin_example/logic"
+	"gin_example/models"
 	"gin_example/param"
 )
 
@@ -28,6 +29,12 @@ func (_ *WatchedService) GetListByUserId(id int) (list []*param.WatchListResp, e
 }
 
 func (_ *WatchedService) AddWatch(req *param.AddWatchReq) (err error) {
-	err = logic.Db.Debug().Table("watch_list").Create(req).Error
+	m := models.WatchListModel{}
+	err = logic.Db.Debug().Table("watch_list").Where(req).Find(&m).Error
+	if err != nil || m.Id <= 0 {
+		err = logic.Db.Debug().Table("watch_list").Create(req).Error
+	} else {
+		err = logic.Db.Debug().Table("watch_list").Updates(req).Error
+	}
 	return
 }
