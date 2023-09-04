@@ -36,7 +36,7 @@ func (bs *BillboardService) Search(title string) (list []*models.Billboard, err 
 	return
 }
 func (bs *BillboardService) SearchByReq(req param.SearchVideoReq) (list []*models.Billboard, err error) {
-	err = logic.Db.Table("billboard").Where("title=? OR actor <> ? OR type=?", req.Name, req.Actor, req.Type).Find(&list).Error
+	err = logic.Db.Table("billboard").Where("title=? OR actor <> ? OR types=?", req.Name, req.Name, req.Name).Find(&list).Error
 	return
 }
 func (bs *BillboardService) Delete(i int) (err error) {

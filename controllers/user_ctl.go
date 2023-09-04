@@ -109,7 +109,7 @@ func (uc *UserCtl) AppCreateUser(ctx *gin.Context) {
 			generateToken(ctx, user)
 		}
 	} else {
-		RespError(ctx, utils.UnknownErrorCode, "account was exists")
+		RespErrorWithMsg(ctx, utils.UnknownErrorCode, "account was exists", nil)
 	}
 }
 

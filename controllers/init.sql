@@ -44,18 +44,22 @@ create table menu
     desc_en    text                                null
 );
 
-create table user
-(
-    id          int auto_increment
-        primary key,
-    username    varchar(255)                        null,
-    password    varchar(255)                        null,
-    created_at  timestamp default CURRENT_TIMESTAMP null,
-    updated_at  timestamp default CURRENT_TIMESTAMP null,
-    ip          varchar(100)                        not null comment 'last login ip address',
-    device_type tinyint   default 0                 not null comment '设备类型 1 -- ios 2 --- android 0 --- others'
-);
-
+CREATE TABLE `user` (
+                        `id` int NOT NULL AUTO_INCREMENT,
+                        `username` varchar(255) DEFAULT NULL,
+                        `password` varchar(255) DEFAULT NULL,
+                        `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+                        `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+                        `ip` varchar(100) NOT NULL COMMENT 'last login ip address',
+                        `device_type` tinyint NOT NULL DEFAULT '0' COMMENT '设备类型 1 -- ios 2 --- android 0 --- others',
+                        `email` varchar(255) NOT NULL DEFAULT '',
+                        `gender` tinyint(1) NOT NULL DEFAULT '1',
+                        `location` varchar(255) NOT NULL DEFAULT '',
+                        `birthday` varchar(255) NOT NULL DEFAULT '',
+                        `avatar` varchar(255) NOT NULL DEFAULT '',
+                        `phone_number` varchar(255) NOT NULL DEFAULT '',
+                        PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 create table admin

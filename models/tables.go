@@ -5,11 +5,16 @@ import (
 )
 
 type User struct {
-	Username   string    `json:"username" gorm:"colum:username"`
-	Password   string    `json:"-"`
+	Username   string `json:"username" gorm:"colum:username"`
+	Password   string `json:"-"`
+	Avatar     string `json:"avatar"`
+	Birthday   string `json:"birthday"`
+	Gender     int    `json:"gender"`
+	Email      string
 	Id         int       `json:"id"`
 	DeviceType int       `json:"device_type"`
 	Ip         string    `json:"-"`
+	Token      string    `json:"token" gorm:"-"`
 	CreatedAt  time.Time `json:"-" gorm:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at" gorm:"updated_at"`
 }
@@ -18,6 +23,7 @@ type AppUserRegisterReq struct {
 	Username   string `json:"username" `
 	Password   string `json:"password"`
 	DeviceType int    `json:"device_type"`
+	Birthday   string `json:"birthday"`
 	Ip         string `json:"ip"`
 }
 

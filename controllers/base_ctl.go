@@ -105,13 +105,14 @@ func generateToken(c *gin.Context, user *models.User) {
 	}
 
 	log.Println(token)
-	c.JSON(http.StatusOK, gin.H{
-		"code":    200,
-		"message": "登录成功！",
-		"data":    token,
-	})
 	key := fmt.Sprintf("user:%d:token", user.Id)
 	logic.Client.Set(key, token, 3600*time.Second)
+	user.Token = token
+	RespOk(c, gin.H{
+		"code":    200,
+		"message": "登录成功！",
+		"data":    user,
+	})
 	return
 }
 
