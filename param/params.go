@@ -46,3 +46,8 @@ type AddWatchReq struct {
 	VideoId int64 `json:"video_id" gorm:"column:video_id"`
 	UserId  int   `json:"user_id" gorm:"column:user_id"`
 }
+type SearchVideoReq struct {
+	Name  string `json:"name,omitempty"` //电影的名称
+	Type  int    `json:"type"`           // 电影的类型
+	Actor string `json:"actor"`          // 主演
+}

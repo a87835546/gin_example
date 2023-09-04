@@ -75,13 +75,12 @@ func (mc *BillboardController) UpdateBillboard(ctx *gin.Context) {
 }
 
 func (mc *BillboardController) SearchBillboard(ctx *gin.Context) {
-	mp := make(map[string]string)
-	ctx.BindJSON(&mp)
-	title, ok := mp["title"]
-	if !ok {
-		RespErrorWithMsg(ctx, utils.ParameterErrorCode, "获取参数异常", nil)
+	req := param.SearchVideoReq{}
+	err := ctx.ShouldBindJSON(&req)
+	if err != nil {
+		RespErrorWithMsg(ctx, utils.ParameterErrorCode, "获取参数异常", err.Error())
 	} else {
-		list, err := bs.Search(title)
+		list, err := bs.SearchByReq(req)
 		if err == nil {
 			RespOk(ctx, list)
 		} else {
