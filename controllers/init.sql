@@ -113,3 +113,15 @@ create table video_type
         unique (title)
 );
 
+CREATE TABLE `history` (
+                           `id` int NOT NULL AUTO_INCREMENT,
+                           `video_id` bigint NOT NULL,
+                           `user_id` int NOT NULL,
+                           `created_at` bigint NOT NULL DEFAULT '0',
+                           `updated_at` bigint NOT NULL DEFAULT '0',
+                           PRIMARY KEY (`id`),
+                           KEY `video_id` (`video_id`),
+                           KEY `user_id` (`user_id`),
+                           CONSTRAINT `history_ibfk_1` FOREIGN KEY (`video_id`) REFERENCES `billboard` (`id`),
+                           CONSTRAINT `history_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -47,3 +47,10 @@ func (bs *BillboardService) QueryByCategory(title string) (bill *models.Billboar
 	err = logic.Db.Table("billboard").Where("category_id=?", title).First(&bill).Error
 	return
 }
+func (bs *BillboardService) InsertHistory(userId, videoId any) (err error) {
+	mp := make(map[string]any)
+	mp["user_id"] = userId
+	mp["video_id"] = videoId
+	err = logic.Db.Table("history").Create(mp).Error
+	return
+}

@@ -126,3 +126,11 @@ type WatchListModel struct {
 	UpdatedAt time.Time `json:"updated_at" gorm:"updated_at"`
 	CreatedAt time.Time `json:"created_at" gorm:"created_at"`
 }
+
+type HistoryModel struct {
+	CreatedAt int64 `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt int64 `json:"updated_at" gorm:"autoUpdateTime:milli"`
+	Id        int
+	UserId    int
+	VideoId   int64
+}

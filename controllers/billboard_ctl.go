@@ -100,3 +100,21 @@ func (mc *BillboardController) Delete(ctx *gin.Context) {
 		RespOk(ctx, nil)
 	}
 }
+
+func (mc *BillboardController) VideoClick(ctx *gin.Context) {
+	mp := make(map[string]any)
+	err := ctx.BindJSON(&mp)
+	if err != nil {
+		RespErrorWithMsg(ctx, utils.ParameterErrorCode, "获取参数异常", err.Error())
+		return
+	} else {
+		id, _ := mp["video_id"]
+		uid, _ := mp["user_id"]
+		err = bs.InsertHistory(uid, id)
+		if err != nil {
+			RespErrorWithMsg(ctx, utils.DeleteDBErrorCode, "删除数据异常", err.Error())
+		} else {
+			RespOk(ctx, nil)
+		}
+	}
+}
