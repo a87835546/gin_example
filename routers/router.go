@@ -81,7 +81,7 @@ func InitRouter() *gin.Engine {
 		categoriesGroup := apiv1.Group("/category")
 		{
 			category := controllers.CategoryController{}
-			categoriesGroup.POST("/list", category.GetCategories)
+			categoriesGroup.GET("/list", category.GetCategories)
 			categoriesGroup.POST("/queryList", category.GetSubCategories)
 			categoriesGroup.GET("/app", category.GetAppTabbarCategories)
 			categoriesGroup.POST("/modify", category.ModifyAppTabbarCategories)

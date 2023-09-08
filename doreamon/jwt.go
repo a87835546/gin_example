@@ -13,7 +13,7 @@ import (
 // 中间件，检查token
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if strings.Contains(c.Request.RequestURI, "login") || strings.Contains(c.Request.RequestURI, "register") {
+		if strings.Contains(c.Request.RequestURI, "login") || strings.Contains(c.Request.RequestURI, "register") || strings.Contains(c.Request.RequestURI, "add") {
 			c.Next()
 			return
 		}
@@ -72,8 +72,8 @@ var (
 
 // 载荷
 type CustomClaims struct {
-	ID   int    `json:"userId"`
-	Name string `json:"name"`
+	ID   int    `json:"user_id"`
+	Name string `json:"username"`
 	jwt.StandardClaims
 }
 
@@ -100,7 +100,8 @@ func (j *JWT) ParseToken(tokenString string) (*CustomClaims, error) {
 		return j.SigningKey, nil
 	})
 	if err != nil {
-		if ve, ok := err.(*jwt.ValidationError); ok {
+		var ve *jwt.ValidationError
+		if errors.As(err, &ve) {
 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
 				return nil, TokenMalformed
 			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {

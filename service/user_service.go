@@ -18,7 +18,7 @@ func NewUserService() *UserService {
 		adminDb: logic.Db.Debug().Table("admin"),
 	}
 }
-func (us *UserService) QueryUserByName(username string) (user *models.User, err error) {
+func (us *UserService) QueryUserByName(username string) (user *models.Admin, err error) {
 	tx := logic.Db.Debug().Table("admin").First(&user, "username=?", username)
 	err = tx.Error
 	return user, err

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"gin_example/doreamon"
 	"gin_example/models"
 	"gin_example/service"
 	"gin_example/utils"
@@ -11,7 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gocolly/colly/v2"
 	"log"
-	"net/http"
 	"sync"
 	"time"
 )
@@ -51,15 +51,30 @@ func (uc *UserCtl) GetUserById(ctx *gin.Context) {
 }
 func (uc *UserCtl) GetUser(ctx *gin.Context) {
 	if user, ok := ctx.Get("claims"); ok {
+		u := user.(*doreamon.CustomClaims)
 		log.Println("user-->>", user)
-		RespOk(ctx, user)
+		name, err := uc.us.QueryUserByName(u.Name)
+		if err != nil {
+			RespErrorWithMsg(ctx, utils.UnknownErrorCode, "unknown error", nil)
+		} else {
+			RespOk(ctx, name)
+		}
 	} else {
-		RespErrorWithMsg(ctx, utils.UnknownErrorCode, "unknown error", nil)
+		username := ctx.GetString("username")
+		name, err := uc.us.QueryUserByName(username)
+		if err != nil {
+			RespErrorWithMsg(ctx, utils.UnknownErrorCode, "unknown error", nil)
+		} else {
+			RespOk(ctx, name)
+		}
 	}
 }
 func (uc *UserCtl) Login(ctx *gin.Context) {
 	req := UserLoginReq{}
-	ctx.BindJSON(&req)
+	err := ctx.ShouldBindJSON(&req)
+	if err != nil {
+		return
+	}
 	log.Println("req--->>>", req)
 	user, err := uc.us.QueryUserByName(req.Username)
 	if err != nil {
@@ -73,7 +88,7 @@ func (uc *UserCtl) Login(ctx *gin.Context) {
 
 func (uc *UserCtl) AppUserLogin(ctx *gin.Context) {
 	req := AppUserLoginReq{}
-	err := ctx.BindJSON(&req)
+	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		log.Println("err--->>>", err)
 	}
@@ -88,13 +103,13 @@ func (uc *UserCtl) AppUserLogin(ctx *gin.Context) {
 		if err != nil {
 			return
 		}
-		generateToken(ctx, user)
+		generateAppUserToken(ctx, user)
 	}
 }
 
 func (uc *UserCtl) AppCreateUser(ctx *gin.Context) {
 	req := models.AppUserRegisterReq{}
-	err := ctx.BindJSON(&req)
+	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		return
 	}
@@ -106,7 +121,7 @@ func (uc *UserCtl) AppCreateUser(ctx *gin.Context) {
 		if err != nil {
 			RespErrorWithMsg(ctx, utils.InsertDBErrorCode, err.Error(), nil)
 		} else {
-			generateToken(ctx, user)
+			generateAppUserToken(ctx, user)
 		}
 	} else {
 		RespErrorWithMsg(ctx, utils.UnknownErrorCode, "account was exists", nil)
@@ -127,12 +142,12 @@ func (uc *UserCtl) Logout(ctx *gin.Context) {
 }
 func (uc *UserCtl) AddUsers(ctx *gin.Context) {
 	user := models.Admin{}
-	if err := ctx.BindJSON(&user); err != nil {
-		err = ctx.AbortWithError(http.StatusBadRequest, err)
-		return
+	if err := ctx.ShouldBindJSON(&user); err != nil {
+		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
+	} else {
+		log.Println("user 请求", user)
+		RespOk(ctx, uc.us.InsertUser(&user))
 	}
-	log.Println("user 请求", user)
-	ctx.JSON(200, uc.us.InsertUser(&user))
 }
 
 func (uc *UserCtl) Upload(ctx *gin.Context) {
