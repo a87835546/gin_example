@@ -125,3 +125,20 @@ CREATE TABLE `history` (
                            CONSTRAINT `history_ibfk_1` FOREIGN KEY (`video_id`) REFERENCES `billboard` (`id`),
                            CONSTRAINT `history_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `banner` (
+                          `id` int NOT NULL AUTO_INCREMENT,
+                          `type` int DEFAULT NULL,
+                          `video_id` bigint DEFAULT NULL,
+                          `title` varchar(255) DEFAULT NULL,
+                          `desc` varchar(255) DEFAULT NULL,
+                          `created_at` bigint DEFAULT NULL,
+                          `updated_at` bigint DEFAULT NULL,
+                          `operation` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '操作者',
+                          PRIMARY KEY (`id`),
+                          KEY `video_id` (`video_id`),
+                          KEY `type` (`type`),
+                          CONSTRAINT `banner_ibfk_1` FOREIGN KEY (`video_id`) REFERENCES `billboard` (`id`),
+                          CONSTRAINT `banner_ibfk_2` FOREIGN KEY (`type`) REFERENCES `menu` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

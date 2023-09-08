@@ -22,18 +22,12 @@ func (mc *BillboardController) GetList(ctx *gin.Context) {
 	}
 }
 func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
-	mp := make(map[string]string)
-	ctx.BindJSON(&mp)
-	title, ok := mp["title"]
-	if !ok {
-		RespErrorWithMsg(ctx, utils.ParameterErrorCode, "获取参数异常", nil)
+	title := ctx.Query("title")
+	list, err := bs.QueryByCategory(title)
+	if err == nil {
+		RespOk(ctx, list)
 	} else {
-		list, err := bs.QueryByCategory(title)
-		if err == nil {
-			RespOk(ctx, list)
-		} else {
-			RespErrorWithMsg(ctx, 210, err.Error(), nil)
-		}
+		RespErrorWithMsg(ctx, 210, err.Error(), nil)
 	}
 }
 

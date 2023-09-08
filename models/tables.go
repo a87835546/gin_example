@@ -135,3 +135,13 @@ type HistoryModel struct {
 	UserId    int
 	VideoId   int64
 }
+
+type BannerModel struct {
+	CreatedAt int64 `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt int64 `json:"updated_at" gorm:"autoUpdateTime:milli"`
+	Id        int
+	VideoId   int64
+	Title     string `json:"title" gorm:"title"`
+	Desc      string `json:"desc" gorm:"desc"`
+	Operation string `json:"operation" gorm:"operation"`
+}

@@ -75,7 +75,7 @@ func InitRouter() *gin.Engine {
 			billboardGroup.POST("/insert", bill.InsertBillboard)
 			billboardGroup.POST("/delete", bill.Delete)
 			billboardGroup.POST("/search", bill.SearchBillboard)
-			billboardGroup.POST("/queryList", bill.GetListByCategory)
+			billboardGroup.GET("/queryList", bill.GetListByCategory)
 
 		}
 
