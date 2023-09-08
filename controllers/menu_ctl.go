@@ -6,6 +6,7 @@ import (
 	"gin_example/utils"
 	"github.com/gin-gonic/gin"
 	"log"
+	"strings"
 )
 
 type MenuController struct {
@@ -14,7 +15,7 @@ type MenuController struct {
 var ms = service.MenuService{}
 
 func (mc *MenuController) GetMenus(ctx *gin.Context) {
-	list, err := ms.GetMenus(0)
+	list, err := ms.GetMenus()
 	if err == nil {
 		RespOk(ctx, list)
 	} else {
@@ -22,12 +23,23 @@ func (mc *MenuController) GetMenus(ctx *gin.Context) {
 	}
 }
 func (mc *MenuController) GetMenusByPositionId(ctx *gin.Context) {
-	id := ctx.GetInt("id")
-	list, err := ms.GetMenus(id)
-	if err == nil {
-		RespOk(ctx, list)
+	id := ctx.Query("id")
+	log.Printf("id--->>>%s", id)
+	res := strings.Split(id, ",")
+	if len(id) == 0 {
+		list, err := ms.GetMenus()
+		if err == nil {
+			RespOk(ctx, list)
+		} else {
+			RespErrorWithMsg(ctx, utils.UpdateDBErrorCode, err.Error(), nil)
+		}
 	} else {
-		RespErrorWithMsg(ctx, utils.UpdateDBErrorCode, err.Error(), nil)
+		list, err := ms.GetMenusByPositionId(res)
+		if err == nil {
+			RespOk(ctx, list)
+		} else {
+			RespErrorWithMsg(ctx, utils.UpdateDBErrorCode, err.Error(), nil)
+		}
 	}
 }
 

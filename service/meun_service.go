@@ -9,13 +9,17 @@ import (
 type MenuService struct {
 }
 
-func (ms *MenuService) GetMenus(id int) (list []*models.MenuModel, err error) {
-	rows, err := logic.Db.Table("menu").Where("position=?", id).Rows()
+func (ms *MenuService) GetMenus() (list []*models.MenuModel, err error) {
+	rows, err := logic.Db.Table("menu").Rows()
 	for rows.Next() {
 		var l *models.MenuModel
 		logic.Db.ScanRows(rows, &l)
 		list = append(list, l)
 	}
+	return
+}
+func (ms *MenuService) GetMenusByPositionId(ids []string) (list []*models.MenuModel, err error) {
+	err = logic.Db.Debug().Table("menu").Where("position IN ?", ids).Find(&list).Error
 	return
 }
 
