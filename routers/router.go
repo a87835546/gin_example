@@ -60,6 +60,7 @@ func InitRouter() *gin.Engine {
 		{
 			menu := controllers.MenuController{}
 			menug.GET("/list", menu.GetMenus)
+			menug.GET("/sub", menu.GetMenusByPositionId)
 			menug.POST("/update", menu.UpdateMenu)
 			menug.POST("/insert", menu.InsertMenus)
 			menug.POST("/delete", menu.DeleteMenus)

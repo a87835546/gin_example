@@ -9,8 +9,8 @@ import (
 type MenuService struct {
 }
 
-func (ms *MenuService) GetMenus() (list []*models.MenuModel, err error) {
-	rows, err := logic.Db.Table("menu").Rows()
+func (ms *MenuService) GetMenus(id int) (list []*models.MenuModel, err error) {
+	rows, err := logic.Db.Table("menu").Where("position=?", id).Rows()
 	for rows.Next() {
 		var l *models.MenuModel
 		logic.Db.ScanRows(rows, &l)

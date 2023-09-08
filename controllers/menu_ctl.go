@@ -14,7 +14,16 @@ type MenuController struct {
 var ms = service.MenuService{}
 
 func (mc *MenuController) GetMenus(ctx *gin.Context) {
-	list, err := ms.GetMenus()
+	list, err := ms.GetMenus(0)
+	if err == nil {
+		RespOk(ctx, list)
+	} else {
+		RespErrorWithMsg(ctx, utils.UpdateDBErrorCode, err.Error(), nil)
+	}
+}
+func (mc *MenuController) GetMenusByPositionId(ctx *gin.Context) {
+	id := ctx.GetInt("id")
+	list, err := ms.GetMenus(id)
 	if err == nil {
 		RespOk(ctx, list)
 	} else {
