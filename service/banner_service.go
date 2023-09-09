@@ -20,3 +20,7 @@ func (bs *BannerService) Insert(model *models.BannerModel) (err error) {
 	err = logic.Db.Debug().Table("banner").Create(model).Error
 	return
 }
+func (bs *BannerService) Update(model *models.BannerModel) (err error) {
+	err = logic.Db.Debug().Table("banner").Updates(model).Error
+	return
+}

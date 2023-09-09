@@ -23,6 +23,11 @@ func (bs *BillboardService) QueryByUrl(url string) (bill *models.Billboard, err 
 	err = logic.Db.Table("billboard").Where("url=?", url).First(&bill).Error
 	return
 }
+func (bs *BillboardService) QueryVideoIdByUrl(url string) (id int64, err error) {
+	err = logic.Db.Table("billboard").Select("id").Where("url=?", url).Scan(&id).Error
+	return
+}
+
 func (bs *BillboardService) QueryByTitle(title string) (bill *models.Billboard, err error) {
 	err = logic.Db.Table("billboard").Where("title=?", title).First(&bill).Error
 	return

@@ -125,7 +125,9 @@ func InitRouter() *gin.Engine {
 		{
 			wc := controllers.NewBannerController()
 			bannerGroup.GET("/list", wc.QueryAll)
+			bannerGroup.GET("/queryByMenuId", wc.QueryByMenuId)
 			bannerGroup.POST("/add", wc.Insert)
+			bannerGroup.POST("/update", wc.Insert)
 		}
 	}
 	return r

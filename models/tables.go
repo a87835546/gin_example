@@ -143,7 +143,8 @@ type BannerModel struct {
 	CreatedAt     int64 `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt     int64 `json:"updated_at" gorm:"autoUpdateTime:milli"`
 	Id            int
-	VideoId       int64
+	VideoId       int64  `json:"video_id"`
+	MenuId        int64  `json:"menu_id"`
 	Title         string `json:"title" gorm:"title"`
 	Desc          string `json:"desc" gorm:"desc"`
 	VideoUrl      string `json:"video_url" gorm:"video_url"`
