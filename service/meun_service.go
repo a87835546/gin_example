@@ -10,16 +10,7 @@ type MenuService struct {
 }
 
 func (ms *MenuService) GetMenus() (list []*models.MenuModel, err error) {
-	rows, err := logic.Db.Table("menu").Rows()
-	for rows.Next() {
-		var l *models.MenuModel
-		logic.Db.ScanRows(rows, &l)
-		list = append(list, l)
-	}
-	return
-}
-func (ms *MenuService) GetMenusByPositionId(ids []string) (list []*models.MenuModel, err error) {
-	err = logic.Db.Debug().Table("menu").Where("position IN ?", ids).Find(&list).Error
+	err = logic.Db.Table("menu").Find(&list).Error
 	return
 }
 
@@ -32,7 +23,7 @@ func (ms *MenuService) Insert(p *param.MenuInsertReq) error {
 	return err
 }
 func (ms *MenuService) Delete(id int) error {
-	err := logic.Db.Table("menu").Where("id=?", id).Delete(models.MenuModel{}).Error
+	err := logic.Db.Table("menu").Where("id=?", id).Update("status", 1).Error
 	return err
 }
 func (ms *MenuService) QueryByTitle(title string) (m *models.MenuModel, err error) {

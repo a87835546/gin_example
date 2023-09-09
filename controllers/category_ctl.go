@@ -18,22 +18,15 @@ type CategoryController struct {
 var cs = service.CategoryService{}
 
 func (mc *CategoryController) GetSubCategories(ctx *gin.Context) {
-	//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
-	mp := make(map[string]any, 0)
-	err := ctx.ShouldBind(&mp)
-	if err != nil {
-		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
+	id := ctx.Query("id")
+	if len(id) == 0 {
+		id = "0"
+	}
+	list, err := cs.GetCategoriesBySuperId(id)
+	if err == nil {
+		RespOk(ctx, list)
 	} else {
-		id, ok := mp["id"]
-		if !ok {
-			id = 0
-		}
-		list, err := cs.GetCategoriesBySuperId(id)
-		if err == nil {
-			RespOk(ctx, list)
-		} else {
-			RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
-		}
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
 	}
 }
 func GetJsonData(c *gin.Context) {
@@ -108,7 +101,7 @@ func (mc *CategoryController) InsertCategory(ctx *gin.Context) {
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
-		m, err := cs.QueryByTitle(req.Title)
+		m, err := cs.QueryByTitleWithId(req.Title, req.MenuId)
 		log.Printf("menu --->> %#v", m)
 		if m.Id != 0 {
 			RespErrorWithMsg(ctx, utils.InsertDBErrorCode, "插入数据异常已经存在", m)
@@ -139,20 +132,13 @@ func (mc *CategoryController) InsertType(ctx *gin.Context) {
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
-		m, err := cs.QueryByTitle(req.Title)
-		log.Printf("menu --->> %#v", m)
-		if m.Id != 0 {
-			RespErrorWithMsg(ctx, utils.InsertDBErrorCode, "插入数据异常已经存在", m)
+		err = cs.InsertType(&req)
+		if err == nil {
+			RespOk(ctx, nil)
 		} else {
-			err = cs.InsertType(&req)
-			if err == nil {
-				RespOk(ctx, nil)
-			} else {
-				RespErrorWithMsg(ctx, utils.UpdateDBErrorCode, err.Error(), nil)
-			}
+			RespErrorWithMsg(ctx, utils.UpdateDBErrorCode, err.Error(), nil)
 		}
 	}
-
 }
 
 func (mc *CategoryController) UpdateType(ctx *gin.Context) {

@@ -83,20 +83,21 @@ type Billboard struct {
 	Type       string    `json:"types" gorm:"column:types"`
 	Actor      string    `json:"actor"`
 	ThemeUrl   string    `json:"theme_url" gorm:"column:theme_url"`
-	CategoryId string    `json:"category_id" gorm:"category_id"`
+	CategoryId int       `json:"category_id" gorm:"category_id"`
+	MenuTitle  string    `json:"menu_title" gorm:"menu_title"`
 	CreatedAt  string    `json:"created_at" gorm:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at" gorm:"updated_at"`
 }
 
 type CategoryModel struct {
-	Id         int64     `json:"id" gorm:"id"`
-	CreatedAt  int64     `json:"created_at" gorm:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at" gorm:"updated_at"`
-	Title      string    `json:"title" gorm:"title"`
-	TitleEn    string    `json:"title_en" gorm:"title_en"`
-	Desc       string    `json:"desc" gorm:"column:desc"`
-	Index      int64     `json:"index" gorm:"column:index"`
-	SuperTitle string    `json:"super_title" gorm:"column:super_title"`
+	Id        int64     `json:"id" gorm:"id"`
+	CreatedAt int64     `json:"created_at" gorm:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"updated_at"`
+	Title     string    `json:"title" gorm:"title"`
+	TitleEn   string    `json:"title_en" gorm:"title_en"`
+	Desc      string    `json:"desc" gorm:"column:desc"`
+	Index     int64     `json:"index" gorm:"column:index"`
+	MenuId    int       `json:"menu_id" gorm:"menu_id"`
 }
 
 type AppCategoryModel struct {
@@ -108,9 +109,11 @@ type AppCategoryModel struct {
 	SuperTitle string `json:"super_title" gorm:"column:super_title"`
 }
 type VideoTypeModel struct {
-	Id     int    `json:"id" gorm:"id"`
-	Title  string `json:"title" gorm:"title"`
-	Author string `json:"author" gorm:"column:author"`
+	Id        int    `json:"id" gorm:"id"`
+	Title     string `json:"title" gorm:"title"`
+	TitleEn   string `json:"title_en" gorm:"title_en"`
+	CreatedAt int64  `json:"created_at" gorm:"autoCreateTime"`
+	Author    string `json:"author" gorm:"column:author"`
 }
 
 type ActorModel struct {
@@ -137,11 +140,13 @@ type HistoryModel struct {
 }
 
 type BannerModel struct {
-	CreatedAt int64 `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt int64 `json:"updated_at" gorm:"autoUpdateTime:milli"`
-	Id        int
-	VideoId   int64
-	Title     string `json:"title" gorm:"title"`
-	Desc      string `json:"desc" gorm:"desc"`
-	Operation string `json:"operation" gorm:"operation"`
+	CreatedAt     int64 `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt     int64 `json:"updated_at" gorm:"autoUpdateTime:milli"`
+	Id            int
+	VideoId       int64
+	Title         string `json:"title" gorm:"title"`
+	Desc          string `json:"desc" gorm:"desc"`
+	VideoUrl      string `json:"video_url" gorm:"video_url"`
+	VideoThemeUrl string `json:"video_theme_url" gorm:"video_theme_url"`
+	Operation     string `json:"operation" gorm:"operation"`
 }

@@ -28,7 +28,7 @@ type MenuInsertReq struct {
 	TitleEn  string `json:"title_en,omitempty" binding:"required"`
 	Desc     string `json:"desc,omitempty" binding:"required"`
 	Role     int    `json:"role,omitempty"`
-	Position int    `json:"position,omitempty"UpdateMenuReq`
+	Position int    `json:"position,omitempty"`
 	Status   int    `json:"status"`
 }
 type WatchListResp struct {

@@ -3,67 +3,60 @@ package service
 import (
 	"gin_example/logic"
 	"gin_example/models"
-	"log"
+	"gin_example/param"
+	"gorm.io/gorm"
 	"time"
 )
 
 type CategoryService struct {
+	Db *gorm.DB
 }
 
-func (ms *CategoryService) GetCategories() (list []*models.CategoryModel, err error) {
-	rows, err := logic.Db.Debug().Table("video_category").Rows()
-	for rows.Next() {
-		var l *models.CategoryModel
-		err = logic.Db.ScanRows(rows, &l)
-		if err != nil {
-			log.Println(err)
-		}
-		list = append(list, l)
-	}
+func (ms *CategoryService) GetCategories() (list []*param.CategoryResp, err error) {
+	err = logic.Db.Debug().Table("menu_category").Model(&param.CategoryResp{}).
+		Select("menu_category.id,menu_category.created_at,menu_category.title,menu_category.title_en,menu.title as menu_title,menu.title_en as menu_title_en,menu_category.desc,menu_category.index").
+		Joins("left join menu on menu_category.menu_id = menu.id").Find(&list).Error
 	return
 }
 
-func (ms *CategoryService) GetCategoriesBySuperId(id any) (list []*models.CategoryModel, err error) {
-	rows, err := logic.Db.Table("video_category").Where("super_title=?", id).Rows()
-	for rows.Next() {
-		var l *models.CategoryModel
-		err = logic.Db.ScanRows(rows, &l)
-		list = append(list, l)
-	}
+func (ms *CategoryService) GetCategoriesBySuperId(id any) (list []*param.CategoryResp, err error) {
+	err = logic.Db.Table("menu_category").Model(&param.CategoryResp{}).
+		Select("menu_category.id,menu_category.created_at,menu_category.title,menu_category.title_en,menu.title as menu_title,menu.title_en as menu_title_en,menu_category.desc,menu_category.index").
+		Joins("left join menu on menu_category.menu_id = menu.id").Where("super_title=?", id).Find(&list).Error
 	return
 }
 
 func (ms *CategoryService) GetAppCategories() (list []*models.AppCategoryModel, err error) {
-	db := logic.Db.Table("video_category").Where("super_title=?", "").Find(&list).Group("index")
+	db := logic.Db.Table("menu_category").Where("super_title=?", "").Find(&list).Group("index")
 	return list, db.Error
 }
 
 func (ms *CategoryService) EditAppCategories(model *models.AppCategoryModel) (err error) {
-	err = logic.Db.Table("video_category").Updates(model).Error
+	err = logic.Db.Table("menu_category").Updates(model).Error
 	if err != nil {
-		err = logic.Db.Table("video_category").Create(model).Error
+		err = logic.Db.Table("menu_category").Create(model).Error
 	}
 	return
 }
 func (ms *CategoryService) DeleteAppCategories(id int) (err error) {
-	db := logic.Db.Table("video_category").Where("id", id).Delete(models.AppCategoryModel{})
+	db := logic.Db.Table("menu_category").Where("id", id).Delete(models.AppCategoryModel{})
 	return db.Error
 }
 func (ms *CategoryService) Update(p *models.CategoryModel) error {
-	err := logic.Db.Table("video_category").Updates(p).Error
+	err := logic.Db.Table("menu_category").Updates(p).Error
 	return err
 }
 func (ms *CategoryService) Insert(p *models.CategoryModel) error {
 	p.CreatedAt = time.Now().UnixMilli()
-	err := logic.Db.Table("video_category").Create(p).Error
+	err := logic.Db.Table("menu_category").Create(p).Error
 	return err
 }
 func (ms *CategoryService) Delete(id int) error {
-	err := logic.Db.Table("video_category").Where("id=?", id).Delete(models.CategoryModel{}).Error
+	err := logic.Db.Table("menu_category").Where("id=?", id).Delete(models.CategoryModel{}).Error
 	return err
 }
-func (ms *CategoryService) QueryByTitle(title string) (m *models.CategoryModel, err error) {
-	err = logic.Db.Debug().Table("video_category").Where("title=?", title).First(&m).Error
+func (ms *CategoryService) QueryByTitleWithId(title string, id int) (m *models.CategoryModel, err error) {
+	err = logic.Db.Debug().Table("menu_category").Where("title=? and menu_id = ?", title, id).First(&m).Error
 	return
 }
 
@@ -77,11 +70,6 @@ func (ms *CategoryService) InsertType(p *models.VideoTypeModel) error {
 }
 
 func (ms *CategoryService) TypesBySuperId() (list []*models.VideoTypeModel, err error) {
-	rows, err := logic.Db.Table("video_type").Rows()
-	for rows.Next() {
-		var l *models.VideoTypeModel
-		logic.Db.ScanRows(rows, &l)
-		list = append(list, l)
-	}
+	err = logic.Db.Table("video_type").Find(&list).Error
 	return
 }

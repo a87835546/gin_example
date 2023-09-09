@@ -59,8 +59,7 @@ func InitRouter() *gin.Engine {
 		menug := apiv1.Group("/menu")
 		{
 			menu := controllers.MenuController{}
-			menug.GET("/list", menu.GetMenusByPositionId)
-			menug.GET("/all", menu.GetMenus)
+			menug.GET("/list", menu.GetMenus)
 			menug.POST("/update", menu.UpdateMenu)
 			menug.POST("/insert", menu.InsertMenus)
 			menug.POST("/delete", menu.DeleteMenus)
@@ -68,7 +67,7 @@ func InitRouter() *gin.Engine {
 
 		billboardGroup := apiv1.Group("/videos")
 		{
-			bill := controllers.BillboardController{}
+			bill := controllers.NewBillboardController()
 			billboardGroup.GET("/list", bill.GetList)
 			billboardGroup.GET("/watch", bill.VideoClick)
 			billboardGroup.POST("/update", bill.UpdateBillboard)
@@ -83,7 +82,7 @@ func InitRouter() *gin.Engine {
 		{
 			category := controllers.CategoryController{}
 			categoriesGroup.GET("/list", category.GetCategories)
-			categoriesGroup.POST("/queryList", category.GetSubCategories)
+			categoriesGroup.GET("/queryList", category.GetSubCategories)
 			categoriesGroup.GET("/app", category.GetAppTabbarCategories)
 			categoriesGroup.POST("/modify", category.ModifyAppTabbarCategories)
 			categoriesGroup.POST("/update", category.Update)
@@ -120,6 +119,13 @@ func InitRouter() *gin.Engine {
 			wc := controllers.NewWatchController()
 			watchGroup.GET("/list", wc.GetListByUserId)
 			watchGroup.POST("/add", wc.AddWatch)
+		}
+
+		bannerGroup := apiv1.Group("/banner")
+		{
+			wc := controllers.NewBannerController()
+			bannerGroup.GET("/list", wc.QueryAll)
+			bannerGroup.POST("/add", wc.Insert)
 		}
 	}
 	return r

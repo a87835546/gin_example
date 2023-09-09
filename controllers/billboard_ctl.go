@@ -9,12 +9,18 @@ import (
 )
 
 type BillboardController struct {
+	vs service.BillboardService
+	bs service.BannerService
 }
 
-var bs = service.BillboardService{}
-
+func NewBillboardController() *BillboardController {
+	return &BillboardController{
+		vs: service.BillboardService{},
+		bs: service.BannerService{},
+	}
+}
 func (mc *BillboardController) GetList(ctx *gin.Context) {
-	list, err := bs.GetList()
+	list, err := mc.vs.GetList()
 	if err == nil {
 		RespOk(ctx, list)
 	} else {
@@ -23,9 +29,14 @@ func (mc *BillboardController) GetList(ctx *gin.Context) {
 }
 func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
 	title := ctx.Query("title")
-	list, err := bs.QueryByCategory(title)
+	//list, err := mc.vs.QueryByCategory(title)
+	banner, err := mc.bs.QueryAllByMenuId(title)
+	resp := param.VideosResp{
+		Banner: banner,
+		//List:   list,
+	}
 	if err == nil {
-		RespOk(ctx, list)
+		RespOk(ctx, resp)
 	} else {
 		RespErrorWithMsg(ctx, 210, err.Error(), nil)
 	}
@@ -39,12 +50,12 @@ func (mc *BillboardController) InsertBillboard(ctx *gin.Context) {
 	} else {
 		log.Printf("billboard req--->> %#v", req)
 
-		m, err := bs.QueryByUrl(req.Url)
+		m, err := mc.vs.QueryByUrl(req.Url)
 		log.Printf("billboard --->> %#v", m)
 		if m.Id != 0 {
 			RespErrorWithMsg(ctx, utils.InsertDBErrorCode, "插入数据异常已经存在", m)
 		} else {
-			err = bs.Insert(&req)
+			err = mc.vs.Insert(&req)
 			if err == nil {
 				RespOk(ctx, nil)
 			} else {
@@ -59,7 +70,7 @@ func (mc *BillboardController) UpdateBillboard(ctx *gin.Context) {
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
-		err = bs.Update(&req)
+		err = mc.vs.Update(&req)
 		if err == nil {
 			RespOk(ctx, nil)
 		} else {
@@ -74,7 +85,7 @@ func (mc *BillboardController) SearchBillboard(ctx *gin.Context) {
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, "获取参数异常", err.Error())
 	} else {
-		list, err := bs.SearchByReq(req)
+		list, err := mc.vs.SearchByReq(req)
 		if err == nil {
 			RespOk(ctx, list)
 		} else {
@@ -84,10 +95,13 @@ func (mc *BillboardController) SearchBillboard(ctx *gin.Context) {
 }
 
 func (mc *BillboardController) Delete(ctx *gin.Context) {
-	mp := make(map[string]int, 0)
-	ctx.BindJSON(&mp)
+	mp := make(map[string]int)
+	err := ctx.ShouldBindJSON(&mp)
+	if err != nil {
+		return
+	}
 	id, _ := mp["id"]
-	err := bs.Delete(id)
+	err = mc.vs.Delete(id)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.DeleteDBErrorCode, "删除数据异常", err.Error())
 	} else {
@@ -104,7 +118,7 @@ func (mc *BillboardController) VideoClick(ctx *gin.Context) {
 	} else {
 		id, _ := mp["video_id"]
 		uid, _ := mp["user_id"]
-		err = bs.InsertHistory(uid, id)
+		err = mc.vs.InsertHistory(uid, id)
 		if err != nil {
 			RespErrorWithMsg(ctx, utils.DeleteDBErrorCode, "删除数据异常", err.Error())
 		} else {

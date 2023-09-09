@@ -10,39 +10,38 @@ create table actor
         unique (id)
 );
 
-create table billboard
-(
-    id          bigint auto_increment
-        primary key,
-    url         varchar(255)                           not null,
-    title       varchar(255)                           null,
-    `desc`      varchar(255)                           null,
-    category_id varchar(200)                           null,
-    created_at  timestamp    default CURRENT_TIMESTAMP null,
-    updated_at  timestamp    default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP,
-    author      varchar(100) default ''                not null,
-    theme_url   varchar(255)                           null,
-    types       varchar(200)                           null,
-    actor       varchar(1000)                          null,
-    rate        varchar(100) default '0'               not null,
-    years       int          default 1990              not null,
-    duration    int          default 0                 not null comment '视频时长，分钟'
-);
+CREATE TABLE `billboard` (
+                             `id` bigint NOT NULL AUTO_INCREMENT,
+                             `url` varchar(255) NOT NULL,
+                             `title` varchar(255) DEFAULT NULL,
+                             `desc` varchar(255) DEFAULT NULL,
+                             `category_id` int DEFAULT NULL,
+                             `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+                             `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                             `author` varchar(100) NOT NULL DEFAULT '',
+                             `theme_url` varchar(255) DEFAULT NULL,
+                             `types` varchar(200) DEFAULT NULL,
+                             `actor` varchar(1000) DEFAULT NULL,
+                             `rate` varchar(100) NOT NULL DEFAULT '0',
+                             `years` int NOT NULL DEFAULT '1990',
+                             `duration` int NOT NULL DEFAULT '0' COMMENT '视频时长，分钟',
+                             `menu_title` varchar(255) DEFAULT NULL,
+                             PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-create table menu
-(
-    id         int auto_increment
-        primary key,
-    `desc`     varchar(255)                        null,
-    title      varchar(255)                        null,
-    role       int                                 not null,
-    position   int       default 0                 null,
-    created_at timestamp default CURRENT_TIMESTAMP null,
-    updated_at timestamp default CURRENT_TIMESTAMP null,
-    status     int                                 null,
-    title_en   varchar(200)                        not null,
-    desc_en    text                                null
-);
+CREATE TABLE `menu` (
+                        `id` int NOT NULL AUTO_INCREMENT,
+                        `desc` varchar(255) DEFAULT NULL,
+                        `title` varchar(255) DEFAULT NULL,
+                        `title_en` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+                        `role` int NOT NULL,
+                        `position` int DEFAULT '0',
+                        `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+                        `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+                        `status` int DEFAULT NULL COMMENT '0 显示 1 隐藏',
+                        `desc_en` text,
+                        PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `user` (
                         `id` int NOT NULL AUTO_INCREMENT,
@@ -87,31 +86,31 @@ create table favorite
     comment '收藏的电影';
 
 
-create table video_category
-(
-    id          int auto_increment
-        primary key,
-    title       varchar(255)                           not null,
-    `desc`      varchar(255)                           null,
-    `index`     int          default 1                 not null,
-    status      tinyint(1)   default 1                 not null,
-    created_at  bigint       default 0                 not null,
-    updated_at  timestamp    default CURRENT_TIMESTAMP null,
-    super_title varchar(100) default '0'               null,
-    title_en    varchar(100)                           not null,
-    constraint title
-        unique (title)
-);
+CREATE TABLE `menu_category` (
+                                 `id` int NOT NULL AUTO_INCREMENT,
+                                 `title` varchar(255) NOT NULL,
+                                 `title_en` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+                                 `desc` varchar(255) DEFAULT NULL,
+                                 `index` int NOT NULL DEFAULT '1',
+                                 `menu_id` int DEFAULT '0',
+                                 `status` tinyint(1) NOT NULL DEFAULT '1',
+                                 `created_at` bigint NOT NULL DEFAULT '0' COMMENT '0 显示 1 隐藏',
+                                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+                                 PRIMARY KEY (`id`),
+                                 UNIQUE KEY `title` (`title`),
+                                 KEY `menu_id` (`menu_id`),
+                                 CONSTRAINT `menu_category_ibfk_1` FOREIGN KEY (`menu_id`) REFERENCES `menu` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-create table video_type
-(
-    id     int auto_increment
-        primary key,
-    title  varchar(200) not null,
-    author varchar(200) null,
-    constraint title
-        unique (title)
-);
+CREATE TABLE `video_type` (
+                              `id` int NOT NULL AUTO_INCREMENT,
+                              `title` varchar(200) NOT NULL,
+                              `author` varchar(200) DEFAULT NULL,
+                              `title_en` varchar(255) DEFAULT NULL,
+                              `created_at` bigint DEFAULT NULL,
+                              PRIMARY KEY (`id`),
+                              UNIQUE KEY `title` (`title`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `history` (
                            `id` int NOT NULL AUTO_INCREMENT,
@@ -129,16 +128,18 @@ CREATE TABLE `history` (
 
 CREATE TABLE `banner` (
                           `id` int NOT NULL AUTO_INCREMENT,
-                          `type` int DEFAULT NULL,
+                          `menu_id` int DEFAULT NULL,
                           `video_id` bigint DEFAULT NULL,
                           `title` varchar(255) DEFAULT NULL,
                           `desc` varchar(255) DEFAULT NULL,
                           `created_at` bigint DEFAULT NULL,
                           `updated_at` bigint DEFAULT NULL,
                           `operation` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '操作者',
+                          `video_url` varchar(255) DEFAULT NULL,
+                          `video_theme_url` varchar(255) DEFAULT NULL,
                           PRIMARY KEY (`id`),
                           KEY `video_id` (`video_id`),
-                          KEY `type` (`type`),
+                          KEY `type` (`menu_id`),
                           CONSTRAINT `banner_ibfk_1` FOREIGN KEY (`video_id`) REFERENCES `billboard` (`id`),
-                          CONSTRAINT `banner_ibfk_2` FOREIGN KEY (`type`) REFERENCES `menu` (`id`)
+                          CONSTRAINT `banner_ibfk_2` FOREIGN KEY (`menu_id`) REFERENCES `menu` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
