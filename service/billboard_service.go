@@ -43,9 +43,10 @@ func (bs *BillboardService) Delete(i int) (err error) {
 	err = logic.Db.Table("billboard").Where("id=?", i).Delete(models.Billboard{}).Error
 	return err
 }
-func (bs *BillboardService) QueryByCategory(title string) (bills []*models.Billboard, err error) {
-	err = logic.Db.Debug().Table("billboard").Where("category_id=?", title).Find(&bills).Error
-	return
+func (bs *BillboardService) QueryByCategoryId(id any) (resp []*models.Billboard, err error) {
+	videos := make([]*models.Billboard, 0)
+	err = logic.Db.Debug().Table("billboard").Where("category_id = ?", id).Find(&videos).Error
+	return videos, err
 }
 func (bs *BillboardService) InsertHistory(userId, videoId any) (err error) {
 	mp := make(map[string]any)

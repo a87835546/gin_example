@@ -6,7 +6,7 @@ import (
 
 type VideosResp struct {
 	Banner []*models.BannerModel `json:"banner"`
-	List   []*VideosType         `json:"list"`
+	List   []*VideosType         `json:"videos"`
 }
 type VideosType struct {
 	Type string              `json:"type"`

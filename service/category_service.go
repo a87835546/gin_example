@@ -59,7 +59,10 @@ func (ms *CategoryService) QueryByTitleWithId(title string, id int) (m *models.C
 	err = logic.Db.Debug().Table("menu_category").Where("title=? and menu_id = ?", title, id).First(&m).Error
 	return
 }
-
+func (ms *CategoryService) QueryByMenuId(id string) (m []*models.CategoryModel, err error) {
+	err = logic.Db.Debug().Table("menu_category").Where("menu_id = ?", id).Find(&m).Error
+	return
+}
 func (ms *CategoryService) UpdateType(p *models.VideoTypeModel) error {
 	err := logic.Db.Table("video_type").Updates(p).Error
 	return err

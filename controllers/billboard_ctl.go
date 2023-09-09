@@ -11,12 +11,14 @@ import (
 type BillboardController struct {
 	vs service.BillboardService
 	bs service.BannerService
+	sc service.CategoryService
 }
 
 func NewBillboardController() *BillboardController {
 	return &BillboardController{
 		vs: service.BillboardService{},
 		bs: service.BannerService{},
+		sc: service.CategoryService{},
 	}
 }
 func (mc *BillboardController) GetList(ctx *gin.Context) {
@@ -28,12 +30,27 @@ func (mc *BillboardController) GetList(ctx *gin.Context) {
 	}
 }
 func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
-	title := ctx.Query("title")
-	//list, err := mc.vs.QueryByCategory(title)
+	title := ctx.Query("menu_id")
+	categories, err := mc.sc.QueryByMenuId(title)
+	if err != nil {
+		return
+	}
+	temp := make([]*param.VideosType, 0)
+	for i := 0; i < len(categories); i++ {
+		c := categories[i]
+		list, err := mc.vs.QueryByCategoryId(c.Id)
+		if err == nil {
+			vt := param.VideosType{
+				Type: c.Title,
+				List: list,
+			}
+			temp = append(temp, &vt)
+		}
+	}
 	banner, err := mc.bs.QueryAllByMenuId(title)
 	resp := param.VideosResp{
 		Banner: banner,
-		//List:   list,
+		List:   temp,
 	}
 	if err == nil {
 		RespOk(ctx, resp)
