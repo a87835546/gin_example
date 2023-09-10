@@ -22,7 +22,7 @@ func (mc *CategoryController) GetSubCategories(ctx *gin.Context) {
 	if len(id) == 0 {
 		id = "0"
 	}
-	list, err := cs.GetCategoriesBySuperId(id)
+	list, err := cs.GetCategoriesByMenuId(id)
 	if err == nil {
 		RespOk(ctx, list)
 	} else {

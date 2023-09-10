@@ -15,14 +15,14 @@ type CategoryService struct {
 func (ms *CategoryService) GetCategories() (list []*param.CategoryResp, err error) {
 	err = logic.Db.Debug().Table("menu_category").Model(&param.CategoryResp{}).
 		Select("menu_category.id,menu_category.created_at,menu_category.title,menu_category.title_en,menu.title as menu_title,menu.title_en as menu_title_en,menu_category.desc,menu_category.index").
-		Joins("left join menu on menu_category.menu_id = menu.id").Find(&list).Error
+		Joins("left join menu on menu_category.menu_id = menu.id and menu_category.status = 1").Find(&list).Error
 	return
 }
 
-func (ms *CategoryService) GetCategoriesBySuperId(id any) (list []*param.CategoryResp, err error) {
+func (ms *CategoryService) GetCategoriesByMenuId(id any) (list []*param.CategoryResp, err error) {
 	err = logic.Db.Table("menu_category").Model(&param.CategoryResp{}).
 		Select("menu_category.id,menu_category.created_at,menu_category.title,menu_category.title_en,menu.title as menu_title,menu.title_en as menu_title_en,menu_category.desc,menu_category.index").
-		Joins("left join menu on menu_category.menu_id = menu.id").Where("super_title=?", id).Find(&list).Error
+		Joins("left join menu on menu_category.menu_id = menu.id and menu_category.status = 1").Where("menu.id=?", id).Find(&list).Error
 	return
 }
 

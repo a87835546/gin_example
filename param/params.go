@@ -8,7 +8,8 @@ type InsertReq struct {
 	ThemeUrl   string `json:"theme_url" gorm:"colum:theme_url"`
 	Types      string `json:"types"`
 	Actor      string `json:"actor"`
-	CategoryId string `json:"category_id"`
+	CategoryId int    `json:"category_id"`
+	MenuTitle  string `json:"menu_title"`
 	Duration   int    `json:"duration"`
 	Rate       string `json:"rate"`
 	Years      int    `json:"years"`
