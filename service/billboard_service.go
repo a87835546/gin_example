@@ -10,7 +10,7 @@ type BillboardService struct {
 }
 
 func (bs *BillboardService) GetList() (list []*models.Billboard, err error) {
-	logic.Db.Table("billboard").Find(&list)
+	logic.Db.Table("billboard").Order("id desc").Find(&list)
 	return
 }
 
