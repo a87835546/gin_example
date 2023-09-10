@@ -5,12 +5,12 @@ import (
 )
 
 type User struct {
-	Username   string `json:"username" gorm:"colum:username"`
-	Password   string `json:"-"`
-	Avatar     string `json:"avatar"`
-	Birthday   string `json:"birthday"`
-	Gender     int    `json:"gender"`
-	Email      string
+	Username   string    `json:"username" gorm:"colum:username"`
+	Password   string    `json:"-"`
+	Avatar     string    `json:"avatar"`
+	Birthday   string    `json:"birthday"`
+	Gender     int       `json:"gender"`
+	Email      string    `json:"email"`
 	Id         int       `json:"id"`
 	DeviceType int       `json:"device_type"`
 	Ip         string    `json:"-"`
@@ -134,15 +134,15 @@ type WatchListModel struct {
 type HistoryModel struct {
 	CreatedAt int64 `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt int64 `json:"updated_at" gorm:"autoUpdateTime:milli"`
-	Id        int
-	UserId    int
-	VideoId   int64
+	Id        int   `json:"id"`
+	UserId    int   `json:"user_id"`
+	VideoId   int64 `json:"video_id"`
 }
 
 type BannerModel struct {
-	CreatedAt     int64 `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt     int64 `json:"updated_at" gorm:"autoUpdateTime:milli"`
-	Id            int
+	CreatedAt     int64  `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt     int64  `json:"updated_at" gorm:"autoUpdateTime:milli"`
+	Id            int    `json:"id"`
 	VideoId       int64  `json:"video_id"`
 	MenuId        int64  `json:"menu_id"`
 	Title         string `json:"title" gorm:"title"`
