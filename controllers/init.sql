@@ -27,7 +27,7 @@ CREATE TABLE `billboard` (
                              `duration` int NOT NULL DEFAULT '0' COMMENT '视频时长，分钟',
                              `menu_title` varchar(255) DEFAULT NULL,
                              PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `menu` (
                         `id` int NOT NULL AUTO_INCREMENT,
@@ -97,10 +97,9 @@ CREATE TABLE `menu_category` (
                                  `created_at` bigint NOT NULL DEFAULT '0' COMMENT '0 显示 1 隐藏',
                                  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
                                  PRIMARY KEY (`id`),
-                                 UNIQUE KEY `title` (`title`),
-                                 KEY `menu_id` (`menu_id`),
+                                 KEY `menu_category_menu_id_title_idx` (`menu_id`,`title`) USING BTREE,
                                  CONSTRAINT `menu_category_ibfk_1` FOREIGN KEY (`menu_id`) REFERENCES `menu` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `video_type` (
                               `id` int NOT NULL AUTO_INCREMENT,
@@ -137,9 +136,10 @@ CREATE TABLE `banner` (
                           `operation` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '操作者',
                           `video_url` varchar(255) DEFAULT NULL,
                           `video_theme_url` varchar(255) DEFAULT NULL,
+                          `status` int NOT NULL DEFAULT '1',
                           PRIMARY KEY (`id`),
                           KEY `video_id` (`video_id`),
                           KEY `type` (`menu_id`),
                           CONSTRAINT `banner_ibfk_1` FOREIGN KEY (`video_id`) REFERENCES `billboard` (`id`),
                           CONSTRAINT `banner_ibfk_2` FOREIGN KEY (`menu_id`) REFERENCES `menu` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

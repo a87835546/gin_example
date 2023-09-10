@@ -147,6 +147,7 @@ type BannerModel struct {
 	MenuId        int64  `json:"menu_id"`
 	Title         string `json:"title" gorm:"title"`
 	Desc          string `json:"desc" gorm:"desc"`
+	Status        int    `json:"status" gorm:"status"`
 	VideoUrl      string `json:"video_url" gorm:"video_url"`
 	VideoThemeUrl string `json:"video_theme_url" gorm:"video_theme_url"`
 	Operation     string `json:"operation" gorm:"operation"`
