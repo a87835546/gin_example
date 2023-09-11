@@ -161,3 +161,11 @@ type VideoUrlListModel struct {
 	Title     string `json:"title"`
 	CreatedAt int64  `json:"created_at" gorm:"autoCreateTime"`
 }
+
+type Logs struct {
+	Id        int    `json:"id"`
+	Type      int    `json:"type"` // 0 管理后台的登录日志 1 用户的登录
+	Desc      string `json:"desc"`
+	Ip        string `json:"ip"`
+	CreatedAt int64  `json:"created_at" gorm:"autoCreateTime"`
+}

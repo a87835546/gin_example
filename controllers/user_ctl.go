@@ -29,11 +29,13 @@ type AppUserLoginReq struct {
 type UserCtl struct {
 	mu sync.RWMutex
 	us *service.UserService
+	ls *service.LogsService
 }
 
 func NewUserCtl() *UserCtl {
 	return &UserCtl{
 		us: service.NewUserService(),
+		ls: &service.LogsService{},
 	}
 }
 func (uc *UserCtl) GetUsers(ctx *gin.Context) {
@@ -82,6 +84,8 @@ func (uc *UserCtl) Login(ctx *gin.Context) {
 	} else if user.Password != req.Password {
 		RespErrorWithMsg(ctx, utils.LoginPasswordErrorCode, "password is wrong", nil)
 	} else {
+		Ip := ctx.ClientIP()
+		uc.ls.InsertLog(0, "管理账号登录:"+req.Username, Ip)
 		generateToken(ctx, user)
 	}
 }
@@ -103,6 +107,8 @@ func (uc *UserCtl) AppUserLogin(ctx *gin.Context) {
 		if err != nil {
 			return
 		}
+		Ip := ctx.ClientIP()
+		uc.ls.InsertLog(0, "app用户登录:"+req.Username, Ip)
 		generateAppUserToken(ctx, user)
 	}
 }
