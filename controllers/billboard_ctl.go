@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"gin_example/models"
 	"gin_example/param"
 	"gin_example/service"
 	"gin_example/utils"
 	"github.com/gin-gonic/gin"
 	"log"
+	"sync"
 )
 
 type BillboardController struct {
@@ -35,18 +37,24 @@ func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
 	if err != nil {
 		return
 	}
+	wg := sync.WaitGroup{}
 	temp := make([]*param.VideosType, 0)
 	for i := 0; i < len(categories); i++ {
+		wg.Add(1)
 		c := categories[i]
-		list, err := mc.vs.QueryByCategoryId(c.Id)
-		if err == nil {
-			vt := param.VideosType{
-				Type: c.Title,
-				List: list,
+		go func(category *models.CategoryModel) {
+			list, err := mc.vs.QueryByCategoryId(category.Id)
+			if err == nil {
+				vt := param.VideosType{
+					Type: category.Title,
+					List: list,
+				}
+				temp = append(temp, &vt)
 			}
-			temp = append(temp, &vt)
-		}
+			wg.Done()
+		}(c)
 	}
+	wg.Wait()
 	banner, err := mc.bs.QueryAllByMenuId(title)
 	resp := param.VideosResp{
 		Banner: banner,

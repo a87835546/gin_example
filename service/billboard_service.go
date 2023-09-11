@@ -91,14 +91,14 @@ func (bs *BillboardService) QueryByCategoryId(id any) (resp []*models.Billboard,
 	videos := make([]*models.Billboard, 0)
 	err = logic.Db.Debug().Table("billboard").Where("category_id = ?", id).Find(&videos).Error
 	wg := sync.WaitGroup{}
-	for i := 0; i < len(resp); i++ {
+	for i := 0; i < len(videos); i++ {
 		wg.Add(1)
 		go func(video *models.Billboard) {
 			var temp []*models.VideoUrlListModel
-			logic.Db.Debug().Table("video_url").Where("video_id <>", video.Id).Find(&temp)
+			err = logic.Db.Debug().Table("video_url").Where("video_id = ?", video.Id).Find(&temp).Error
 			video.Urls = temp
 			wg.Done()
-		}(resp[i])
+		}(videos[i])
 	}
 	wg.Wait()
 	return videos, err
