@@ -11,10 +11,10 @@ import (
 
 const (
 	dbUser     string = "root"
-	dbPassword string = "12345678"
+	dbPassword string = "insert_password"
 	dbHost     string = "127.0.0.1"
 	dbPort     int    = 3306
-	dbName     string = "demo"
+	dbName     string = "dev_db"
 )
 
 var dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&loc=Local&parseTime=true", dbUser, dbPassword, dbHost, dbPort, dbName)

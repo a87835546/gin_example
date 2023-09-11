@@ -1,18 +1,20 @@
 package param
 
 type InsertReq struct {
-	Title      string `json:"title" binding:"required"`
-	Url        string `json:"url" binding:"required"`
-	Desc       string `json:"desc" binding:"required"`
-	Author     string `json:"author"`
-	ThemeUrl   string `json:"theme_url" gorm:"colum:theme_url"`
-	Types      string `json:"types"`
-	Actor      string `json:"actor"`
-	CategoryId int    `json:"category_id"`
-	MenuTitle  string `json:"menu_title"`
-	Duration   int    `json:"duration"`
-	Rate       string `json:"rate"`
-	Years      int    `json:"years"`
+	Id         int64    `json:"id"`
+	Title      string   `json:"title" binding:"required"`
+	Url        string   `json:"url" binding:"required"`
+	Desc       string   `json:"desc" binding:"required"`
+	Author     string   `json:"author"`
+	ThemeUrl   string   `json:"theme_url" gorm:"colum:theme_url"`
+	Types      string   `json:"types"`
+	Actor      string   `json:"actor"`
+	CategoryId int      `json:"category_id"`
+	MenuTitle  string   `json:"menu_title"`
+	Duration   int      `json:"duration"`
+	Rate       string   `json:"rate"`
+	Years      int      `json:"years"`
+	Urls       []string `json:"urls" gorm:"-"`
 }
 
 type UpdateBillboardReq struct {

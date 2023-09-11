@@ -4,6 +4,9 @@ import (
 	"gin_example/logic"
 	"gin_example/models"
 	"gin_example/param"
+	"gorm.io/gorm"
+	"strings"
+	"sync"
 )
 
 type BillboardService struct {
@@ -15,10 +18,46 @@ func (bs *BillboardService) GetList() (list []*models.Billboard, err error) {
 }
 
 func (bs *BillboardService) Insert(billboard *param.InsertReq) (err error) {
-	err = logic.Db.Table("billboard").Create(billboard).Error
+	urls := strings.Split(billboard.Url, " ")
+	if len(urls) > 1 {
+		titles := strings.Split(urls[0], "$")
+		if len(titles) == 2 {
+			billboard.Url = titles[1]
+		}
+	}
+	tx := logic.Db.Begin()
+	err = tx.Table("billboard").Create(billboard).Error
+	if err != nil {
+		tx.Rollback()
+	}
+	tx.Commit()
+	tx1 := logic.Db.Begin()
+	if len(urls) > 0 {
+		temp := make([]*models.VideoUrlListModel, 0)
+		for u := 0; u < len(urls); u++ {
+			if len(urls[u]) > 0 {
+				titles := strings.Split(urls[u], "$")
+				temp = append(temp, &models.VideoUrlListModel{Url: titles[1], Title: titles[0], VideoId: billboard.Id})
+			}
+		}
+		err = tx1.Debug().Table("video_url").CreateInBatches(temp, len(temp)).Error
+	}
+	err = tx1.Commit().Error
+	if err != nil {
+		tx1.Rollback()
+	}
 	return
 }
-
+func (bs *BillboardService) InsertUrls(tx *gorm.DB, urls []string, vid int64) (err error) {
+	temp := make([]*models.VideoUrlListModel, 0)
+	for u := 0; u < len(urls); u++ {
+		if len(urls[u]) > 0 {
+			temp = append(temp, &models.VideoUrlListModel{VideoId: vid, Url: urls[u]})
+		}
+	}
+	err = logic.Db.Debug().Table("video_url").CreateInBatches(temp, len(temp)).Error
+	return
+}
 func (bs *BillboardService) QueryByUrl(url string) (bill *models.Billboard, err error) {
 	err = logic.Db.Table("billboard").Where("url=?", url).First(&bill).Error
 	return
@@ -51,6 +90,17 @@ func (bs *BillboardService) Delete(i int) (err error) {
 func (bs *BillboardService) QueryByCategoryId(id any) (resp []*models.Billboard, err error) {
 	videos := make([]*models.Billboard, 0)
 	err = logic.Db.Debug().Table("billboard").Where("category_id = ?", id).Find(&videos).Error
+	wg := sync.WaitGroup{}
+	for i := 0; i < len(resp); i++ {
+		wg.Add(1)
+		go func(video *models.Billboard) {
+			var temp []*models.VideoUrlListModel
+			logic.Db.Debug().Table("video_url").Where("video_id <>", video.Id).Find(&temp)
+			video.Urls = temp
+			wg.Done()
+		}(resp[i])
+	}
+	wg.Wait()
 	return videos, err
 }
 func (bs *BillboardService) InsertHistory(userId, videoId any) (err error) {

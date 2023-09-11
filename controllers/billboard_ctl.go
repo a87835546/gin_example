@@ -66,8 +66,11 @@ func (mc *BillboardController) InsertBillboard(ctx *gin.Context) {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
 		log.Printf("billboard req--->> %#v", req)
-
 		m, err := mc.vs.QueryByUrl(req.Url)
+		if err == nil && m.Id > 0 {
+			RespErrorWithMsg(ctx, utils.QueryDBErrorCode, "插入数据异常已经存在", m)
+			return
+		}
 		log.Printf("billboard --->> %#v", m)
 		if m.Id != 0 {
 			RespErrorWithMsg(ctx, utils.InsertDBErrorCode, "插入数据异常已经存在", m)

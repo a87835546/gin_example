@@ -72,21 +72,22 @@ type MenuModel struct {
 }
 
 type Billboard struct {
-	Id         int64     `json:"id" gorm:"id"`
-	Url        string    `json:"url" gorm:"url"`
-	Desc       string    `json:"desc"`
-	Author     string    `json:"author"`
-	Duration   int       `json:"duration"`
-	Rate       string    `json:"rate"`
-	Years      int       `json:"years"`
-	Title      string    `json:"title" gorm:"title"`
-	Type       string    `json:"types" gorm:"column:types"`
-	Actor      string    `json:"actor"`
-	ThemeUrl   string    `json:"theme_url" gorm:"column:theme_url"`
-	CategoryId string    `json:"category_id" gorm:"category_id"`
-	MenuTitle  string    `json:"menu_title" gorm:"menu_title"`
-	CreatedAt  string    `json:"created_at" gorm:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at" gorm:"updated_at"`
+	Id         int64                `json:"id" gorm:"id"`
+	Url        string               `json:"url" gorm:"url"`
+	Urls       []*VideoUrlListModel `json:"urls" gorm:"-"`
+	Desc       string               `json:"desc"`
+	Author     string               `json:"author"`
+	Duration   int                  `json:"duration"`
+	Rate       string               `json:"rate"`
+	Years      int                  `json:"years"`
+	Title      string               `json:"title" gorm:"title"`
+	Type       string               `json:"types" gorm:"column:types"`
+	Actor      string               `json:"actor"`
+	ThemeUrl   string               `json:"theme_url" gorm:"column:theme_url"`
+	CategoryId string               `json:"category_id" gorm:"category_id"`
+	MenuTitle  string               `json:"menu_title" gorm:"menu_title"`
+	CreatedAt  string               `json:"created_at" gorm:"created_at"`
+	UpdatedAt  time.Time            `json:"updated_at" gorm:"updated_at"`
 }
 
 type CategoryModel struct {
@@ -151,4 +152,12 @@ type BannerModel struct {
 	VideoUrl      string `json:"video_url" gorm:"video_url"`
 	VideoThemeUrl string `json:"video_theme_url" gorm:"video_theme_url"`
 	Operation     string `json:"operation" gorm:"operation"`
+}
+
+type VideoUrlListModel struct {
+	Id        int    `json:"id"`
+	VideoId   int64  `json:"video_id"`
+	Url       string `json:"url"`
+	Title     string `json:"title"`
+	CreatedAt int64  `json:"created_at" gorm:"autoCreateTime"`
 }
