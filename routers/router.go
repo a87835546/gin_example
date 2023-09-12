@@ -1,29 +1,35 @@
 package routers
 
 import (
+	"fmt"
 	"gin_example/controllers"
 	"gin_example/doreamon"
 	"gin_example/middleware"
 	"github.com/gin-gonic/gin"
+	"io"
+	"log"
+	"os"
+	"time"
 )
 
 func InitRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(middleware.Cors())
 	r.Use(gin.Logger())
-	//h := fmt.Sprintf("-%d", time.Now().Hour())
-	//t := time.Now().Format("2006-01-02")
-	//path := "log/" + t + h + ".log"
-	//f, err := os.Create(path)
-	//if err != nil {
-	//
-	//	log.Printf("err-->>%s", err.Error())
-	//}
-	//log.SetOutput(f)
-	//r.Use(gin.LoggerWithWriter(f))
+	h := fmt.Sprintf("-%d", time.Now().Hour())
+	t := time.Now().Format("2006-01-02")
+	path := "log/" + t + h + ".log"
+	f, err := os.Create(path)
+	if err != nil {
+
+		log.Printf("err-->>%s", err.Error())
+	}
+	log.SetOutput(f)
+	r.Use(gin.LoggerWithWriter(f))
 	r.Use(gin.Recovery())
+	r.Use(middleware.ErrorHttp)
 	//r.Use(doreamon.JWTAuth())
-	//gin.DefaultWriter = io.MultiWriter(f)
+	gin.DefaultWriter = io.MultiWriter(f)
 
 	//r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
