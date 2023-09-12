@@ -154,6 +154,17 @@ type BannerModel struct {
 	Operation     string `json:"operation" gorm:"operation"`
 }
 
+type BannerWithVideoModel struct {
+	BannerModel
+	Actor      string `json:"actor"`
+	Years      int    `json:"years"`
+	Title      string `json:"title" gorm:"title"`
+	Type       string `json:"types" gorm:"column:types"`
+	Rate       string `json:"rate"`
+	CategoryId string `json:"category_id" gorm:"category_id"`
+	MenuTitle  string `json:"menu_title" gorm:"menu_title"`
+}
+
 type VideoUrlListModel struct {
 	Id        int    `json:"id"`
 	VideoId   int64  `json:"video_id"`

@@ -87,10 +87,12 @@ func (bs *BillboardService) SearchByReq(req param.SearchVideoReq) (list []*model
 }
 func (bs *BillboardService) QueryVideoByActor(name string) (list []*models.Billboard, err error) {
 	names := strings.Split(name, ",")
-	if len(names) > 1 {
+	log.Printf("names --->>> %s", names)
+	if len(names) > 1 && len(names[0]) > 0 {
 		name = names[0]
 	}
-	str := fmt.Sprintf("FIND_IN_SET(%s,%s)", name, "actor")
+	str := fmt.Sprintf("FIND_IN_SET('%s'"+
+		",%s)", name, "actor")
 	log.Printf("str--->>> %s", str)
 	err = logic.Db.Debug().Table("billboard").Where(str).Find(&list).Limit(5).Error
 	return
