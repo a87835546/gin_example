@@ -28,7 +28,7 @@ func (mc *BillboardController) GetList(ctx *gin.Context) {
 	if err == nil {
 		RespOk(ctx, list)
 	} else {
-		RespErrorWithMsg(ctx, 210, err.Error(), nil)
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
 	}
 }
 func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
@@ -63,7 +63,7 @@ func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
 	if err == nil {
 		RespOk(ctx, resp)
 	} else {
-		RespErrorWithMsg(ctx, 210, err.Error(), nil)
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
 	}
 }
 
@@ -87,7 +87,7 @@ func (mc *BillboardController) InsertBillboard(ctx *gin.Context) {
 			if err == nil {
 				RespOk(ctx, nil)
 			} else {
-				RespErrorWithMsg(ctx, 210, err.Error(), nil)
+				RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
 			}
 		}
 	}
@@ -102,11 +102,29 @@ func (mc *BillboardController) UpdateBillboard(ctx *gin.Context) {
 		if err == nil {
 			RespOk(ctx, nil)
 		} else {
-			RespErrorWithMsg(ctx, 210, err.Error(), nil)
+			RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
 		}
 	}
 }
+func (mc *BillboardController) QueryVideoByActor(ctx *gin.Context) {
+	name := ctx.Query("name")
+	list, err := mc.vs.QueryVideoByActor(name)
+	if err == nil {
+		RespOk(ctx, list)
+	} else {
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
+	}
+}
 
+func (mc *BillboardController) QuerySubVideoById(ctx *gin.Context) {
+	id := ctx.Query("id")
+	list, err := mc.vs.QuerySubVideoById(id)
+	if err == nil {
+		RespOk(ctx, list)
+	} else {
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
+	}
+}
 func (mc *BillboardController) SearchBillboard(ctx *gin.Context) {
 	req := param.SearchVideoReq{}
 	err := ctx.ShouldBindJSON(&req)
@@ -117,7 +135,7 @@ func (mc *BillboardController) SearchBillboard(ctx *gin.Context) {
 		if err == nil {
 			RespOk(ctx, list)
 		} else {
-			RespErrorWithMsg(ctx, 210, err.Error(), nil)
+			RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
 		}
 	}
 }

@@ -1,10 +1,12 @@
 package service
 
 import (
+	"fmt"
 	"gin_example/logic"
 	"gin_example/models"
 	"gin_example/param"
 	"gorm.io/gorm"
+	"log"
 	"strings"
 	"sync"
 )
@@ -80,9 +82,32 @@ func (bs *BillboardService) Search(title string) (list []*models.Billboard, err 
 	return
 }
 func (bs *BillboardService) SearchByReq(req param.SearchVideoReq) (list []*models.Billboard, err error) {
-	err = logic.Db.Table("billboard").Where("title=? OR actor <> ? OR types=?", req.Name, req.Name, req.Name).Find(&list).Error
+	err = logic.Db.Table("billboard").Where("title=? OR actor IN ? OR types=?", req.Name, req.Name, req.Name).Find(&list).Error
 	return
 }
+func (bs *BillboardService) QueryVideoByActor(name string) (list []*models.Billboard, err error) {
+	names := strings.Split(name, ",")
+	if len(names) > 1 {
+		name = names[0]
+	}
+	str := fmt.Sprintf("FIND_IN_SET(%s,%s)", name, "actor")
+	log.Printf("str--->>> %s", str)
+	err = logic.Db.Debug().Table("billboard").Where(str).Find(&list).Limit(5).Error
+	return
+}
+
+func (bs *BillboardService) QuerySubVideoById(name string) (list *models.Billboard, err error) {
+	err = logic.Db.Debug().Table("billboard").Where("id=?", name).Find(&list).Error
+	if fmt.Sprintf("%d", list.Id) == name {
+		var temp []*models.VideoUrlListModel
+		err = logic.Db.Debug().Table("video_url").Where("video_id = ?", name).Find(&temp).Error
+		list.Urls = temp
+	} else {
+		return nil, nil
+	}
+	return
+}
+
 func (bs *BillboardService) Delete(i int) (err error) {
 	err = logic.Db.Table("billboard").Where("id=?", i).Delete(models.Billboard{}).Error
 	return err
