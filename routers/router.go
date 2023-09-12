@@ -35,6 +35,7 @@ func InitRouter() *gin.Engine {
 
 	apiv1 := r.Group("/api/v1")
 	{
+		apiv1.GET("/parser", controllers.Re)
 		apiv1.GET("/ping", func(context *gin.Context) {
 			context.JSON(200, gin.H{
 				"message": "pong",

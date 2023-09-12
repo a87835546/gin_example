@@ -1,18 +1,22 @@
 package controllers
 
 import (
+	"bytes"
 	"fmt"
 	"gin_example/doreamon"
 	"gin_example/logic"
 	"gin_example/models"
 	jwtgo "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/goccy/go-json"
+	"github.com/gocolly/colly/v2"
 	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -157,4 +161,135 @@ func generateAppUserToken(c *gin.Context, user *models.User) {
 
 func SystemConfig(ctx *gin.Context) {
 	RespOk(ctx, nil)
+}
+
+func Re(ctx *gin.Context) {
+	urls := make([]string, 0)
+	url := ctx.Query("url")
+	c := colly.NewCollector(
+		colly.MaxDepth(2),
+	)
+	c.OnResponse(func(r *colly.Response) {
+		fmt.Println("Visited", r.Request.URL)
+	})
+	c.OnHTML(".videoName", func(e *colly.HTMLElement) {
+		fmt.Printf("videoName-->>>%s\n", e.Attr("href"))
+		urls = append(urls, e.Attr("href"))
+	})
+	c.OnError(func(r *colly.Response, err error) {
+		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err.Error())
+	})
+
+	c.OnRequest(func(r *colly.Request) {
+		fmt.Println("Visiting", r.URL.String())
+	})
+
+	c.Visit(url)
+
+	for i := 0; i < len(urls); i++ {
+		go func(url string) {
+			parser(url)
+		}(urls[i])
+	}
+}
+
+type Video struct {
+	ThemeUrl string   `json:"theme_url,omitempty"`
+	Urls     string   `json:"url,omitempty"`
+	URLs     []string `json:"urls,omitempty"`
+	Title    string   `json:"title,omitempty"`
+	Desc     string   `json:"desc,omitempty"`
+	Actor    string   `json:"actor,omitempty"`
+	Rate     string   `json:"rate,omitempty"`
+	Year     int      `json:"year,omitempty"`
+	Types    string   `json:"types,omitempty"`
+}
+
+func parser(url string) {
+	v := Video{}
+	c := colly.NewCollector(
+		colly.MaxDepth(2),
+	)
+
+	c.OnResponse(func(r *colly.Response) {
+		fmt.Println("Visited", r.Request.URL)
+	})
+	//c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+	//	e.Request.Visit(e.Attr("href"))
+	//})
+	c.OnHTML("//input", func(e *colly.HTMLElement) {
+		fmt.Println("First column of a table row:", e.Text)
+	})
+	c.OnXML("//p", func(e *colly.XMLElement) {
+		fmt.Printf("p-->>>%s\n", e.Text)
+		if strings.Contains(e.Text, "：") {
+			titles := strings.Split(e.Text, "：")
+			if titles[0] == "片名" {
+				v.Title = titles[1]
+			}
+			if titles[0] == "豆瓣" {
+				v.Rate = titles[1]
+			}
+			if titles[0] == "类型" {
+				v.Types = titles[1]
+			}
+			if titles[0] == "演员" {
+				v.Actor = titles[1]
+			}
+			if titles[0] == "年代" {
+				year := titles[1]
+				y, err := strconv.Atoi(year)
+				if err == nil {
+					v.Year = y
+					log.Printf("year--->>%s\n", year)
+
+				} else {
+					log.Printf("err--->>%s\n", err)
+				}
+			}
+		}
+
+	})
+	c.OnHTML("font", func(e *colly.HTMLElement) {
+		//baiduBtn := e.Attr("value")
+		//fmt.Println("匹配到目标元素ID su:", e.Text)
+		if e.Text != "全选" {
+			v.URLs = append(v.URLs, e.Text)
+		}
+		v.Urls = strings.Join(v.URLs, ",")
+	})
+	c.OnHTML("img", func(e *colly.HTMLElement) {
+		//baiduBtn := e.Attr("value")
+		//fmt.Println("匹配到目标元素ID img:", e.Attr("src"))
+		v.ThemeUrl = e.Attr("src")
+	})
+	c.OnHTML(".vod_content", func(e *colly.HTMLElement) {
+		fmt.Printf("vod_content-->>>%s\n", e.Text)
+		v.Desc = e.Text
+	})
+	//c.OnResponse(func(r *colly.Response) {
+	//	r.Ctx.Put("Custom-header", r.Headers.Get("Custom-Header"))
+	//	fmt.Printf("copyContent-->>>%v\n", string(r.Body))
+	//})
+
+	c.OnError(func(r *colly.Response, err error) {
+		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err.Error())
+	})
+
+	c.OnRequest(func(r *colly.Request) {
+		fmt.Println("Visiting", r.URL.String())
+	})
+
+	c.Visit("https://bfzy.tv/index.php/" + url)
+
+	log.Printf("video -->>> %v\n", v)
+	b, _ := json.Marshal(&v)
+	var m map[string]string
+	_ = json.Unmarshal(b, &m)
+	fmt.Println(m)
+
+	resp, _ := http.Post("http://127.0.0.1:8080/api/v1/videos/insert", "application/json; charset=utf-8", bytes.NewReader(b))
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(body))
 }
