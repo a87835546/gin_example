@@ -7,6 +7,7 @@ import (
 	"gin_example/param"
 	"gorm.io/gorm"
 	"log"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -39,7 +40,9 @@ func (bs *BillboardService) Insert(billboard *param.InsertReq) (err error) {
 		for u := 0; u < len(urls); u++ {
 			if len(urls[u]) > 0 {
 				titles := strings.Split(urls[u], "$")
-				temp = append(temp, &models.VideoUrlListModel{Url: titles[1], Title: titles[0], VideoId: billboard.Id})
+				if len(titles) > 1 {
+					temp = append(temp, &models.VideoUrlListModel{Url: titles[1], Title: titles[0], VideoId: billboard.Id})
+				}
 			}
 		}
 		err = tx1.Debug().Table("video_url").CreateInBatches(temp, len(temp)).Error
@@ -114,9 +117,17 @@ func (bs *BillboardService) Delete(i int) (err error) {
 	err = logic.Db.Table("billboard").Where("id=?", i).Delete(models.Billboard{}).Error
 	return err
 }
-func (bs *BillboardService) QueryByCategoryId(id any) (resp []*models.Billboard, err error) {
+func (bs *BillboardService) QueryByCategoryId(id any, page, num string) (resp []*models.Billboard, err error) {
+	p, err := strconv.Atoi(page)
+	n, err := strconv.Atoi(num)
+	if p == 0 {
+		p = 1
+	}
+	if n == 0 {
+		n = 20
+	}
 	videos := make([]*models.Billboard, 0)
-	err = logic.Db.Debug().Table("billboard").Where("category_id = ?", id).Find(&videos).Error
+	err = logic.Db.Debug().Table("billboard").Where("category_id = ?", id).Find(&videos).Limit(20).Offset((p - 1) * n).Error
 	wg := sync.WaitGroup{}
 	for i := 0; i < len(videos); i++ {
 		wg.Add(1)

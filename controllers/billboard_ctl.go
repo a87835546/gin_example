@@ -33,6 +33,8 @@ func (mc *BillboardController) GetList(ctx *gin.Context) {
 }
 func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
 	title := ctx.Query("menu_id")
+	page := ctx.Query("page")
+	num := ctx.Query("num")
 	categories, err := mc.sc.QueryByMenuId(title)
 	if err != nil {
 		return
@@ -43,7 +45,7 @@ func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
 		wg.Add(1)
 		c := categories[i]
 		go func(category *models.CategoryModel) {
-			list, err := mc.vs.QueryByCategoryId(category.Id)
+			list, err := mc.vs.QueryByCategoryId(category.Id, page, num)
 			if err == nil {
 				vt := param.VideosType{
 					Type: category.Title,

@@ -166,7 +166,11 @@ func SystemConfig(ctx *gin.Context) {
 func Re(ctx *gin.Context) {
 	urls := make([]string, 0)
 	url := ctx.Query("url")
+	id := ctx.Query("category_id")
+	title := ctx.Query("menu_title")
+	categoryId, _ := strconv.Atoi(id)
 	c := colly.NewCollector(
+		//colly.Async(true),
 		colly.MaxDepth(2),
 	)
 	c.OnResponse(func(r *colly.Response) {
@@ -174,43 +178,59 @@ func Re(ctx *gin.Context) {
 	})
 	c.OnHTML(".videoName", func(e *colly.HTMLElement) {
 		fmt.Printf("videoName-->>>%s\n", e.Attr("href"))
-		urls = append(urls, e.Attr("href"))
+		url := e.Attr("href")
+		if len(url) > 0 {
+			urls = append(urls, e.Attr("href"))
+		}
 	})
 	c.OnError(func(r *colly.Response, err error) {
-		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err.Error())
+		fmt.Println("Request URL:", r.Request.URL, "failed with response:", string(r.Body), "\nError:", err.Error())
 	})
 
 	c.OnRequest(func(r *colly.Request) {
+		r.Headers.Set("User-Agent", RandomString())
 		fmt.Println("Visiting", r.URL.String())
 	})
 
 	c.Visit(url)
 
 	for i := 0; i < len(urls); i++ {
-		go func(url string) {
-			parser(url)
-		}(urls[i])
+		url1 := fmt.Sprintf("https://bfzy.tv%s", urls[i])
+		parserOne(url1, title, categoryId)
 	}
 }
 
 type Video struct {
-	ThemeUrl string   `json:"theme_url,omitempty"`
-	Urls     string   `json:"url,omitempty"`
-	URLs     []string `json:"urls,omitempty"`
-	Title    string   `json:"title,omitempty"`
-	Desc     string   `json:"desc,omitempty"`
-	Actor    string   `json:"actor,omitempty"`
-	Rate     string   `json:"rate,omitempty"`
-	Year     int      `json:"year,omitempty"`
-	Types    string   `json:"types,omitempty"`
+	ThemeUrl   string   `json:"theme_url,omitempty"`
+	Urls       string   `json:"url,omitempty"`
+	URLs       []string `json:"urls,omitempty"`
+	Title      string   `json:"title,omitempty"`
+	Desc       string   `json:"desc,omitempty"`
+	Actor      string   `json:"actor,omitempty"`
+	Rate       string   `json:"rate,omitempty"`
+	Year       int      `json:"years,omitempty"`
+	Types      string   `json:"types,omitempty"`
+	MenuTitle  string   `json:"menu_title"`
+	Author     string   `json:"author"`
+	CategoryId int      `json:"category_id"`
 }
 
-func parser(url string) {
-	v := Video{}
+func ParserOne(ctx *gin.Context) {
+	url := ctx.Query("url")
+	title := ctx.Query("menu_title")
+	id := ctx.Query("category_id")
+	categoryId, _ := strconv.Atoi(id)
+	RespOk(ctx, parserOne(url, title, categoryId))
+}
+
+func parserOne(url, title string, id int) (err error) {
+	if len(url) == 0 {
+		return nil
+	}
 	c := colly.NewCollector(
 		colly.MaxDepth(2),
 	)
-
+	v := &Video{}
 	c.OnResponse(func(r *colly.Response) {
 		fmt.Println("Visited", r.Request.URL)
 	})
@@ -221,7 +241,7 @@ func parser(url string) {
 		fmt.Println("First column of a table row:", e.Text)
 	})
 	c.OnXML("//p", func(e *colly.XMLElement) {
-		fmt.Printf("p-->>>%s\n", e.Text)
+		//fmt.Printf("p-->>>%s\n", e.Text)
 		if strings.Contains(e.Text, "：") {
 			titles := strings.Split(e.Text, "：")
 			if titles[0] == "片名" {
@@ -256,7 +276,7 @@ func parser(url string) {
 		if e.Text != "全选" {
 			v.URLs = append(v.URLs, e.Text)
 		}
-		v.Urls = strings.Join(v.URLs, ",")
+		v.Urls = strings.Join(v.URLs, " ")
 	})
 	c.OnHTML("img", func(e *colly.HTMLElement) {
 		//baiduBtn := e.Attr("value")
@@ -264,7 +284,7 @@ func parser(url string) {
 		v.ThemeUrl = e.Attr("src")
 	})
 	c.OnHTML(".vod_content", func(e *colly.HTMLElement) {
-		fmt.Printf("vod_content-->>>%s\n", e.Text)
+		//fmt.Printf("vod_content-->>>%s\n", e.Text)
 		v.Desc = e.Text
 	})
 	//c.OnResponse(func(r *colly.Response) {
@@ -273,23 +293,35 @@ func parser(url string) {
 	//})
 
 	c.OnError(func(r *colly.Response, err error) {
-		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err.Error())
+		fmt.Println("Request URL:", r.Request.URL, "failed with response:", string(r.Body), "\nError:", err.Error())
 	})
 
 	c.OnRequest(func(r *colly.Request) {
+		r.Headers.Set("User-Agent", RandomString())
 		fmt.Println("Visiting", r.URL.String())
 	})
 
-	c.Visit("https://bfzy.tv/index.php/" + url)
+	err = c.Visit(url)
 
 	log.Printf("video -->>> %v\n", v)
-	b, _ := json.Marshal(&v)
-	var m map[string]string
-	_ = json.Unmarshal(b, &m)
-	fmt.Println(m)
+	if len(v.Urls) > 0 {
+		us := v.URLs[0]
+		titles := strings.Split(us, "$")
+		if len(titles) > 1 {
+			v.Urls = titles[1]
+		}
+		v.MenuTitle = title
+		v.CategoryId = id
+		v.Author = "脚本"
+		b, _ := json.Marshal(&v)
+		var m map[string]string
+		_ = json.Unmarshal(b, &m)
+		fmt.Println(m)
 
-	resp, _ := http.Post("http://127.0.0.1:8080/api/v1/videos/insert", "application/json; charset=utf-8", bytes.NewReader(b))
+		resp, _ := http.Post("http://127.0.0.1:8080/api/v1/videos/insert", "application/json; charset=utf-8", bytes.NewReader(b))
 
-	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(body))
+		body, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println(string(body))
+	}
+	return
 }
