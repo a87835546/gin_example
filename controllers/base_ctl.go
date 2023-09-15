@@ -163,6 +163,55 @@ func SystemConfig(ctx *gin.Context) {
 	RespOk(ctx, nil)
 }
 
+func BatchInsert(ctx *gin.Context) {
+	uid := ctx.Query("uid")
+	idStr := ctx.Query("category_id")
+	title := ctx.Query("menu_title")
+	start := ctx.Query("start")
+	end := ctx.Query("end")
+
+	id, _ := strconv.Atoi(idStr)
+	s, _ := strconv.Atoi(start)
+	e, _ := strconv.Atoi(end)
+
+	for i := s; i < e; i++ {
+		url := fmt.Sprintf("https://bfzy.tv/index.php/vod/type/id/%s/page/%d.htmll", uid, i)
+		urls := make([]string, 0)
+		id := id
+		title := title
+		c := colly.NewCollector(
+			//colly.Async(true),
+			colly.MaxDepth(2),
+		)
+		c.OnResponse(func(r *colly.Response) {
+			fmt.Println("Visited", r.Request.URL)
+		})
+		c.OnHTML(".videoName", func(e *colly.HTMLElement) {
+			fmt.Printf("videoName-->>>%s\n", e.Attr("href"))
+			url := e.Attr("href")
+			if len(url) > 0 {
+				urls = append(urls, e.Attr("href"))
+			}
+		})
+		c.OnError(func(r *colly.Response, err error) {
+			fmt.Println("Request URL:", r.Request.URL, "failed with response:", string(r.Body), "\nError:", err.Error())
+		})
+
+		c.OnRequest(func(r *colly.Request) {
+			r.Headers.Set("User-Agent", RandomString())
+			fmt.Println("Visiting", r.URL.String())
+		})
+
+		c.Visit(url)
+
+		for i := 0; i < len(urls); i++ {
+			url1 := fmt.Sprintf("https://bfzy.tv%s", urls[i])
+			parserOne(url1, title, id)
+		}
+	}
+
+}
+
 func Re(ctx *gin.Context) {
 	urls := make([]string, 0)
 	url := ctx.Query("url")

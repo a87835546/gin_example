@@ -32,6 +32,7 @@ func InitRouter() *gin.Engine {
 	{
 		apiv1.GET("/parser", controllers.Re)
 		apiv1.GET("/parserOne", controllers.ParserOne)
+		apiv1.GET("/batch", controllers.BatchInsert)
 		apiv1.GET("/ping", func(context *gin.Context) {
 			context.JSON(200, gin.H{
 				"message": "pong",
@@ -87,7 +88,7 @@ func InitRouter() *gin.Engine {
 		{
 			category := controllers.CategoryController{}
 			categoriesGroup.GET("/list", category.GetCategories)
-			categoriesGroup.GET("/queryList", category.GetSubCategories)
+			categoriesGroup.GET("/queryList", category.GetSubCategoriesWithMenu)
 			categoriesGroup.GET("/app", category.GetAppTabbarCategories)
 			categoriesGroup.POST("/modify", category.ModifyAppTabbarCategories)
 			categoriesGroup.POST("/update", category.Update)

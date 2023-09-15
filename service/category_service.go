@@ -19,13 +19,18 @@ func (ms *CategoryService) GetCategories() (list []*param.CategoryResp, err erro
 	return
 }
 
-func (ms *CategoryService) GetCategoriesByMenuId(id any) (list []*param.CategoryResp, err error) {
-	err = logic.Db.Table("menu_category").Model(&param.CategoryResp{}).
-		Select("menu_category.id,menu_category.created_at,menu_category.title,menu_category.title_en,menu.title as menu_title,menu.title_en as menu_title_en,menu_category.desc,menu_category.index").
-		Joins("left join menu on menu_category.menu_id = menu.id and menu_category.status = 1").Where("menu.id=?", id).Find(&list).Error
+func (ms *CategoryService) GetCategoriesWithMenuByMenuId(id []string) (list []*param.CategoryResp, err error) {
+	if len(id) == 0 {
+		err = logic.Db.Table("menu_category").Model(&param.CategoryResp{}).
+			Select("menu_category.id,menu_category.created_at,menu_category.title,menu_category.title_en,menu.title as menu_title,menu.title_en as menu_title_en,menu_category.desc,menu_category.index").
+			Joins("left join menu on menu_category.menu_id = menu.id and menu_category.status = 1").Find(&list).Error
+	} else {
+		err = logic.Db.Table("menu_category").Model(&param.CategoryResp{}).
+			Select("menu_category.id,menu_category.created_at,menu_category.title,menu_category.title_en,menu.title as menu_title,menu.title_en as menu_title_en,menu_category.desc,menu_category.index").
+			Joins("left join menu on menu_category.menu_id = menu.id and menu_category.status = 1").Where("menu.id IN ?", id).Find(&list).Error
+	}
 	return
 }
-
 func (ms *CategoryService) GetAppCategories() (list []*models.AppCategoryModel, err error) {
 	db := logic.Db.Table("menu_category").Where("super_title=?", "").Find(&list).Group("index")
 	return list, db.Error

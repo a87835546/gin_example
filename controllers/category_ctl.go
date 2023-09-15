@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type CategoryController struct {
@@ -17,12 +18,13 @@ type CategoryController struct {
 
 var cs = service.CategoryService{}
 
-func (mc *CategoryController) GetSubCategories(ctx *gin.Context) {
+func (mc *CategoryController) GetSubCategoriesWithMenu(ctx *gin.Context) {
 	id := ctx.Query("id")
-	if len(id) == 0 {
-		id = "0"
+	ids := make([]string, 0)
+	if len(id) > 0 {
+		ids = strings.Split(id, ",")
 	}
-	list, err := cs.GetCategoriesByMenuId(id)
+	list, err := cs.GetCategoriesWithMenuByMenuId(ids)
 	if err == nil {
 		RespOk(ctx, list)
 	} else {
