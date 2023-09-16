@@ -81,7 +81,7 @@ func InitRouter() *gin.Engine {
 			billboardGroup.GET("/queryList", bill.GetListByCategory)
 			billboardGroup.GET("/queryByActor", bill.QueryVideoByActor)
 			billboardGroup.GET("/queryById", bill.QuerySubVideoById)
-
+			billboardGroup.GET("/urls/videoId", bill.GetVideoUrlsByVideoId)
 		}
 
 		categoriesGroup := apiv1.Group("/category")

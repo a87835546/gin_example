@@ -9,7 +9,6 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	"sync"
 )
 
 type BillboardService struct {
@@ -21,13 +20,19 @@ func (bs *BillboardService) GetList() (list []*models.Billboard, err error) {
 }
 
 func (bs *BillboardService) Insert(billboard *param.InsertReq) (err error) {
-	urls := strings.Split(billboard.Url, " ")
-	if len(urls) > 1 {
-		titles := strings.Split(urls[0], "$")
-		if len(titles) == 2 {
-			billboard.Url = titles[1]
+	urls := make([]string, 0)
+	if len(billboard.Urls) > 0 {
+		urls = billboard.Urls
+	} else {
+		urls = strings.Split(billboard.Url, " ")
+		if len(urls) > 1 {
+			titles := strings.Split(urls[0], "$")
+			if len(titles) == 2 {
+				billboard.Url = titles[1]
+			}
 		}
 	}
+
 	tx := logic.Db.Begin()
 	err = tx.Table("billboard").Create(billboard).Error
 	if err != nil {
@@ -117,7 +122,34 @@ func (bs *BillboardService) Delete(i int) (err error) {
 	err = logic.Db.Table("billboard").Where("id=?", i).Delete(models.Billboard{}).Error
 	return err
 }
-func (bs *BillboardService) QueryByCategoryId(id any, page, num string) (resp []*models.Billboard, err error) {
+func (bs *BillboardService) QueryByCategoryId(id any, page, num string) (resp []*param.VideosType, err error) {
+	p, err := strconv.Atoi(page)
+	n, err := strconv.Atoi(num)
+	if p == 0 {
+		p = 1
+	}
+	if n == 0 {
+		n = 5
+	}
+	videos := make([]*models.Billboard, 0)
+	ids := make([]*models.CategoryModel, 0)
+	err = logic.Db.Debug().Raw("SELECT * FROM menu_category WHERE menu_id = ? ", id).Scan(&ids).Error
+	for i := 0; i < len(ids); i++ {
+		v := &param.VideosType{}
+		err = logic.Db.Debug().Raw("SELECT * FROM billboard WHERE category_id = ? limit ?,?", ids[i].Id, (p-1)*n, n).Scan(&videos).Error
+		v.Type = ids[i].Title
+		v.TypeEn = ids[i].TitleEn
+		v.List = videos
+		resp = append(resp, v)
+	}
+	return
+}
+
+func (bs *BillboardService) QueryVideosUrlByVideoId(id any) (resp []*models.VideoUrlListModel, err error) {
+	err = logic.Db.Debug().Table("video_url").Where("video_id=?", id).Scan(&resp).Error
+	return
+}
+func (bs *BillboardService) QueryVideosWithUrlsByCategoryId(id any, page, num string) (resp []*models.Billboard, err error) {
 	p, err := strconv.Atoi(page)
 	n, err := strconv.Atoi(num)
 	if p == 0 {
@@ -126,20 +158,21 @@ func (bs *BillboardService) QueryByCategoryId(id any, page, num string) (resp []
 	if n == 0 {
 		n = 20
 	}
-	videos := make([]*models.Billboard, 0)
-	err = logic.Db.Debug().Table("billboard").Where("category_id = ?", id).Find(&videos).Limit(20).Offset((p - 1) * n).Error
-	wg := sync.WaitGroup{}
-	for i := 0; i < len(videos); i++ {
-		wg.Add(1)
-		go func(video *models.Billboard) {
-			var temp []*models.VideoUrlListModel
-			err = logic.Db.Debug().Table("video_url").Where("video_id = ?", video.Id).Find(&temp).Error
-			video.Urls = temp
-			wg.Done()
-		}(videos[i])
+	err = logic.Db.Debug().Raw("SELECT * FROM billboard WHERE category_id IN (SELECT id FROM menu_category WHERE menu_id = ?  GROUP BY id)", id).Scan(&resp).Limit(n).Offset((p - 1) * n).Error
+	ids := make([]int64, 0)
+	for i := 0; i < len(resp); i++ {
+		ids = append(ids, resp[i].Id)
 	}
-	wg.Wait()
-	return videos, err
+	urls := make([]models.VideoUrlListModel, 0)
+	err = logic.Db.Debug().Raw("SELECT * FROM video_url WHERE video_id IN (SELECT id FROM billboard WHERE category_id IN (SELECT id FROM menu_category WHERE menu_id = ? GROUP BY id) GROUP BY id)", id).Scan(&urls).Error
+	for i := 0; i < len(urls); i++ {
+		for j := 0; j < len(resp); j++ {
+			if resp[j].Id == urls[i].VideoId {
+				resp[j].Urls = append(resp[j].Urls, &urls[i])
+			}
+		}
+	}
+	return
 }
 func (bs *BillboardService) InsertHistory(userId, videoId any) (err error) {
 	mp := make(map[string]any)

@@ -9,8 +9,9 @@ type VideosResp struct {
 	List   []*VideosType                  `json:"videos"`
 }
 type VideosType struct {
-	Type string              `json:"type"`
-	List []*models.Billboard `json:"list"`
+	Type   string              `json:"type"`
+	TypeEn string              `json:"type_en"`
+	List   []*models.Billboard `json:"list"`
 }
 type CategoryResp struct {
 	Id          int64  `json:"id" gorm:"id"`

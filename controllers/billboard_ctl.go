@@ -1,13 +1,11 @@
 package controllers
 
 import (
-	"gin_example/models"
 	"gin_example/param"
 	"gin_example/service"
 	"gin_example/utils"
 	"github.com/gin-gonic/gin"
 	"log"
-	"sync"
 )
 
 type BillboardController struct {
@@ -35,32 +33,11 @@ func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
 	title := ctx.Query("menu_id")
 	page := ctx.Query("page")
 	num := ctx.Query("num")
-	categories, err := mc.sc.QueryByMenuId(title)
-	if err != nil {
-		return
-	}
-	wg := sync.WaitGroup{}
-	temp := make([]*param.VideosType, 0)
-	for i := 0; i < len(categories); i++ {
-		wg.Add(1)
-		c := categories[i]
-		go func(category *models.CategoryModel) {
-			list, err := mc.vs.QueryByCategoryId(category.Id, page, num)
-			if err == nil {
-				vt := param.VideosType{
-					Type: category.Title,
-					List: list,
-				}
-				temp = append(temp, &vt)
-			}
-			wg.Done()
-		}(c)
-	}
-	wg.Wait()
+	list, err := mc.vs.QueryByCategoryId(title, page, num)
 	banner, err := mc.bs.QueryAllByMenuId(title)
 	resp := param.VideosResp{
 		Banner: banner,
-		List:   temp,
+		List:   list,
 	}
 	if err == nil {
 		RespOk(ctx, resp)
@@ -68,7 +45,16 @@ func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
 		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
 	}
 }
-
+func (mc *BillboardController) GetVideoUrlsByVideoId(ctx *gin.Context) {
+	vid := ctx.Query("video_id")
+	id, err := mc.vs.QueryVideosUrlByVideoId(vid)
+	if err != nil {
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
+		return
+	} else {
+		RespOk(ctx, id)
+	}
+}
 func (mc *BillboardController) InsertBillboard(ctx *gin.Context) {
 	req := param.InsertReq{}
 	err := ctx.ShouldBindJSON(&req)
