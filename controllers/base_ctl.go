@@ -175,7 +175,7 @@ func BatchInsert(ctx *gin.Context) {
 	e, _ := strconv.Atoi(end)
 
 	for i := s; i < e; i++ {
-		url := fmt.Sprintf("https://bfzy.tv/index.php/vod/type/id/%s/page/%d.htmll", uid, i)
+		url := fmt.Sprintf("https://bfzy.tv/index.php/vod/type/id/%s/page/%d.html", uid, i)
 		urls := make([]string, 0)
 		id := id
 		title := title

@@ -14,9 +14,14 @@ import (
 )
 
 type CategoryController struct {
+	db *service.CategoryService
 }
 
-var cs = service.CategoryService{}
+func NewCategoryController() *CategoryController {
+	return &CategoryController{
+		db: service.NewCategoryService(),
+	}
+}
 
 func (mc *CategoryController) GetSubCategoriesWithMenu(ctx *gin.Context) {
 	id := ctx.Query("id")
@@ -24,7 +29,7 @@ func (mc *CategoryController) GetSubCategoriesWithMenu(ctx *gin.Context) {
 	if len(id) > 0 {
 		ids = strings.Split(id, ",")
 	}
-	list, err := cs.GetCategoriesWithMenuByMenuId(ids)
+	list, err := mc.db.GetCategoriesWithMenuByMenuId(ids)
 	if err == nil {
 		RespOk(ctx, list)
 	} else {
@@ -44,7 +49,7 @@ func GetJsonData(c *gin.Context) {
 	c.JSON(http.StatusOK, jsonData)
 }
 func (mc *CategoryController) GetCategories(ctx *gin.Context) {
-	list, err := cs.GetCategories()
+	list, err := mc.db.GetCategories()
 	if err == nil {
 		RespOk(ctx, list)
 	} else {
@@ -52,7 +57,7 @@ func (mc *CategoryController) GetCategories(ctx *gin.Context) {
 	}
 }
 func (mc *CategoryController) GetAppTabbarCategories(ctx *gin.Context) {
-	list, err := cs.GetAppCategories()
+	list, err := mc.db.GetAppCategories()
 	if err == nil || len(list) == 0 {
 		RespOk(ctx, list)
 	} else {
@@ -62,7 +67,7 @@ func (mc *CategoryController) GetAppTabbarCategories(ctx *gin.Context) {
 func (mc *CategoryController) ModifyAppTabbarCategories(ctx *gin.Context) {
 	app := models.AppCategoryModel{}
 	err := ctx.BindJSON(&app)
-	err = cs.EditAppCategories(&app)
+	err = mc.db.EditAppCategories(&app)
 	if err == nil {
 		RespOk(ctx, nil)
 	} else {
@@ -74,7 +79,7 @@ func (mc *CategoryController) DeleteAppTabbarCategories(ctx *gin.Context) {
 	mp := make(map[string]int, 0)
 	err := ctx.BindJSON(&mp)
 	id := mp["id"]
-	err = cs.DeleteAppCategories(id)
+	err = mc.db.DeleteAppCategories(id)
 	if err == nil {
 		RespOk(ctx, nil)
 	} else {
@@ -88,7 +93,7 @@ func (mc *CategoryController) Update(ctx *gin.Context) {
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
-		err = cs.Update(&req)
+		err = mc.db.Update(&req)
 		if err == nil {
 			RespOk(ctx, nil)
 		} else {
@@ -103,12 +108,12 @@ func (mc *CategoryController) InsertCategory(ctx *gin.Context) {
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
-		m, err := cs.QueryByTitleWithId(req.Title, req.MenuId)
+		m, err := mc.db.QueryByTitleWithId(req.Title, req.MenuId)
 		log.Printf("menu --->> %#v", m)
 		if m.Id != 0 {
 			RespErrorWithMsg(ctx, utils.InsertDBErrorCode, "插入数据异常已经存在", m)
 		} else {
-			err = cs.Insert(&req)
+			err = mc.db.Insert(&req)
 			if err == nil {
 				RespOk(ctx, nil)
 			} else {
@@ -134,7 +139,7 @@ func (mc *CategoryController) InsertType(ctx *gin.Context) {
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
-		err = cs.InsertType(&req)
+		err = mc.db.InsertType(&req)
 		if err == nil {
 			RespOk(ctx, nil)
 		} else {
@@ -149,7 +154,7 @@ func (mc *CategoryController) UpdateType(ctx *gin.Context) {
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
-		err = cs.UpdateType(&req)
+		err = mc.db.UpdateType(&req)
 		if err == nil {
 			RespOk(ctx, nil)
 		} else {
@@ -159,7 +164,7 @@ func (mc *CategoryController) UpdateType(ctx *gin.Context) {
 }
 
 func (mc *CategoryController) GetTypes(ctx *gin.Context) {
-	list, err := cs.TypesBySuperId()
+	list, err := mc.db.TypesBySuperId()
 	if err == nil {
 		RespOk(ctx, list)
 	} else {

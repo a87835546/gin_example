@@ -3,24 +3,31 @@ package service
 import (
 	"gin_example/logic"
 	"gin_example/models"
+	"gorm.io/gorm"
 )
 
 type BannerService struct {
+	db *gorm.DB
 }
 
+func NewBannerService() *BannerService {
+	return &BannerService{
+		db: logic.Db.Debug().Table("banner"),
+	}
+}
 func (bs *BannerService) QueryAll() (list []*models.BannerModel, err error) {
-	err = logic.Db.Debug().Table("banner").Find(&list).Error
+	err = bs.db.Find(&list).Error
 	return
 }
 func (bs *BannerService) QueryAllByMenuId(id string) (list []*models.BannerWithVideoModel, err error) {
-	err = logic.Db.Debug().Table("banner").Select("banner.*,billboard.actor,billboard.years,billboard.types,billboard.rate,billboard.menu_title,billboard.category_id").Joins("LEFT JOIN billboard ON banner.video_id = billboard.id").Where("menu_id=?", id).Find(&list).Error
+	err = bs.db.Select("banner.*,billboard.actor,billboard.years,billboard.types,billboard.rate,billboard.menu_title,billboard.category_id").Joins("LEFT JOIN billboard ON banner.video_id = billboard.id").Where("menu_id=?", id).Find(&list).Error
 	return
 }
 func (bs *BannerService) Insert(model *models.BannerModel) (err error) {
-	err = logic.Db.Debug().Table("banner").Create(model).Error
+	err = bs.db.Create(model).Error
 	return
 }
 func (bs *BannerService) Update(model *models.BannerModel) (err error) {
-	err = logic.Db.Debug().Table("banner").Updates(model).Error
+	err = bs.db.Updates(model).Error
 	return
 }

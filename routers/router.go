@@ -73,6 +73,7 @@ func InitRouter() *gin.Engine {
 		{
 			bill := controllers.NewBillboardController()
 			billboardGroup.GET("/list", bill.GetList)
+			billboardGroup.GET("/test", bill.Query)
 			billboardGroup.GET("/watch", bill.VideoClick)
 			billboardGroup.POST("/update", bill.UpdateBillboard)
 			billboardGroup.POST("/insert", bill.InsertBillboard)
@@ -86,7 +87,7 @@ func InitRouter() *gin.Engine {
 
 		categoriesGroup := apiv1.Group("/category")
 		{
-			category := controllers.CategoryController{}
+			category := controllers.NewCategoryController()
 			categoriesGroup.GET("/list", category.GetCategories)
 			categoriesGroup.GET("/queryList", category.GetSubCategoriesWithMenu)
 			categoriesGroup.GET("/app", category.GetAppTabbarCategories)

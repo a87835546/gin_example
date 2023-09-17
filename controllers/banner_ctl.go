@@ -8,14 +8,14 @@ import (
 )
 
 type BannerController struct {
-	bs service.BannerService
-	sb service.BillboardService
+	bs *service.BannerService
+	sb *service.BillboardService
 }
 
 func NewBannerController() *BannerController {
 	return &BannerController{
-		bs: service.BannerService{},
-		sb: service.BillboardService{},
+		bs: service.NewBannerService(),
+		sb: service.NewBillboardService(),
 	}
 }
 

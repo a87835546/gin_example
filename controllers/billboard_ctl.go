@@ -9,20 +9,32 @@ import (
 )
 
 type BillboardController struct {
-	vs service.BillboardService
+	vs *service.BillboardService
 	bs service.BannerService
 	sc service.CategoryService
 }
 
 func NewBillboardController() *BillboardController {
 	return &BillboardController{
-		vs: service.BillboardService{},
+		vs: service.NewBillboardService(),
 		bs: service.BannerService{},
 		sc: service.CategoryService{},
 	}
 }
+
+func (mc *BillboardController) Query(ctx *gin.Context) {
+	list, err := mc.vs.Query()
+	if err != nil {
+		RespErrorWithMsg(ctx, 201, err.Error(), nil)
+	} else {
+		RespOk(ctx, list)
+	}
+}
+
 func (mc *BillboardController) GetList(ctx *gin.Context) {
-	list, err := mc.vs.GetList()
+	page := ctx.Query("page")
+	num := ctx.Query("num")
+	list, err := mc.vs.GetList(page, num)
 	if err == nil {
 		RespOk(ctx, list)
 	} else {
