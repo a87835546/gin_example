@@ -5,6 +5,7 @@ import (
 	"gin_example/service"
 	"gin_example/utils"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 type BannerController struct {
@@ -62,6 +63,7 @@ func (bc *BannerController) Update(ctx *gin.Context) {
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
+		log.Printf("update banner request %v\n", req.Id)
 		err = bc.bs.Update(&req)
 		if err != nil {
 			RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)

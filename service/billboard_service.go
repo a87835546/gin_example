@@ -14,12 +14,14 @@ import (
 type BillboardService struct {
 	db     *gorm.DB
 	vUrlDb *gorm.DB
+	noneDb *gorm.DB
 }
 
 func NewBillboardService() *BillboardService {
 	return &BillboardService{
 		db:     logic.Db.Debug().Table("billboard"),
 		vUrlDb: logic.Db.Debug().Table("video_url"),
+		noneDb: logic.Db.Debug(),
 	}
 }
 
@@ -153,12 +155,12 @@ func (bs *BillboardService) QueryByCategoryId(id any, page, num string) (resp []
 	if n == 0 {
 		n = 5
 	}
-	videos := make([]*models.Billboard, 0)
 	ids := make([]*models.CategoryModel, 0)
-	err = bs.db.Raw("SELECT * FROM menu_category WHERE menu_id = ? ", id).Scan(&ids).Error
+	err = bs.noneDb.Raw("SELECT * FROM menu_category WHERE menu_id = ? ", id).Scan(&ids).Error
 	for i := 0; i < len(ids); i++ {
+		videos := make([]*models.Billboard, 0)
 		v := &param.VideosType{}
-		err = bs.db.Raw("SELECT * FROM billboard WHERE category_id = ? limit ?,?", ids[i].Id, (p-1)*n, n).Scan(&videos).Error
+		err = bs.noneDb.Raw("SELECT * FROM billboard WHERE category_id = ? limit ?,?", ids[i].Id, (p-1)*n, n).Scan(&videos).Error
 		v.Type = ids[i].Title
 		v.TypeEn = ids[i].TitleEn
 		v.List = videos

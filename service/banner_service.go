@@ -20,7 +20,9 @@ func (bs *BannerService) QueryAll() (list []*models.BannerModel, err error) {
 	return
 }
 func (bs *BannerService) QueryAllByMenuId(id string) (list []*models.BannerWithVideoModel, err error) {
-	err = bs.db.Select("banner.*,billboard.actor,billboard.years,billboard.types,billboard.rate,billboard.menu_title,billboard.category_id").Joins("LEFT JOIN billboard ON banner.video_id = billboard.id").Where("menu_id=?", id).Find(&list).Error
+	err = logic.Db.Debug().
+		Raw("select banner.*,billboard.actor,billboard.years,billboard.types,billboard.rate,billboard.menu_title,billboard.category_id from banner LEFT JOIN billboard ON banner.video_id = billboard.id where banner.menu_id = ?", id).
+		Find(&list).Error
 	return
 }
 func (bs *BannerService) Insert(model *models.BannerModel) (err error) {
@@ -28,6 +30,6 @@ func (bs *BannerService) Insert(model *models.BannerModel) (err error) {
 	return
 }
 func (bs *BannerService) Update(model *models.BannerModel) (err error) {
-	err = bs.db.Updates(model).Error
+	err = bs.db.Updates(model).Where("id=?", model.Id).Error
 	return
 }

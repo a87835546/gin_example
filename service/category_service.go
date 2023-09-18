@@ -11,12 +11,14 @@ import (
 type CategoryService struct {
 	Db     *gorm.DB
 	TypeDb *gorm.DB
+	MenuBd *gorm.DB
 }
 
 func NewCategoryService() *CategoryService {
 	return &CategoryService{
 		Db:     logic.Db.Debug().Table("menu_category"),
 		TypeDb: logic.Db.Debug().Table("video_type"),
+		MenuBd: logic.Db.Debug().Table("menu"),
 	}
 }
 func (ms *CategoryService) GetCategories() (list []*param.CategoryResp, err error) {
@@ -28,13 +30,9 @@ func (ms *CategoryService) GetCategories() (list []*param.CategoryResp, err erro
 
 func (ms *CategoryService) GetCategoriesWithMenuByMenuId(id []string) (list []*param.CategoryResp, err error) {
 	if len(id) == 0 {
-		err = ms.Db.Model(&param.CategoryResp{}).
-			Select("menu_category.id,menu_category.created_at,menu_category.title,menu_category.title_en,menu.title as menu_title,menu.title_en as menu_title_en,menu_category.desc,menu_category.index").
-			Joins("left join menu on menu_category.menu_id = menu.id and menu_category.status = 1").Find(&list).Error
+		err = logic.Db.Debug().Model(&param.CategoryResp{}).Raw("select menu_category.id,menu_category.created_at,menu_category.title,menu_category.title_en,menu.title as menu_title,menu.title_en as menu_title_en,menu_category.desc,menu_category.index\nfrom menu_category\nleft join menu on menu_category.menu_id = menu.id and menu_category.status = 1").Find(&list).Error
 	} else {
-		err = ms.Db.Model(&param.CategoryResp{}).
-			Select("menu_category.id,menu_category.created_at,menu_category.title,menu_category.title_en,menu.title as menu_title,menu.title_en as menu_title_en,menu_category.desc,menu_category.index").
-			Joins("left join menu on menu_category.menu_id = menu.id and menu_category.status = 1").Where("menu.id IN ?", id).Find(&list).Error
+		err = logic.Db.Debug().Model(&param.CategoryResp{}).Raw("select menu_category.id,menu_category.created_at,menu_category.title,menu_category.title_en,menu.title as menu_title,menu.title_en as menu_title_en,menu_category.desc,menu_category.index\nfrom menu_category\nleft join menu on menu_category.menu_id = menu.id and menu_category.status = 1\nwhere menu_category.menu_id in ?", id).Find(&list).Error
 	}
 	return
 }
