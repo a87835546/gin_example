@@ -99,7 +99,7 @@ func InitRouter() *gin.Engine {
 
 		typeGroup := apiv1.Group("/type")
 		{
-			category := controllers.CategoryController{}
+			category := controllers.NewCategoryController()
 			typeGroup.GET("/list", category.GetTypes)
 			typeGroup.POST("/modify", category.UpdateType)
 			typeGroup.POST("/insert", category.InsertType)

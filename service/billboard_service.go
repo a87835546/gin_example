@@ -30,7 +30,7 @@ func (bs *BillboardService) Query() (list []*models.Billboard, err error) {
 	return
 }
 
-func (bs *BillboardService) GetList(page, num string) (list []*models.Billboard, err error) {
+func (bs *BillboardService) GetList(page, num, title string) (list []*models.Billboard, err error) {
 	p, err := strconv.Atoi(page)
 	n, err := strconv.Atoi(num)
 	if p == 0 {
@@ -39,7 +39,12 @@ func (bs *BillboardService) GetList(page, num string) (list []*models.Billboard,
 	if n == 0 {
 		n = 5
 	}
-	err = bs.db.Order("id desc").Limit(n).Offset((p - 1) * n).Find(&list).Error
+	db := bs.db
+	if len(title) != 0 {
+		db = bs.db.Where("menu_title=?", title)
+	}
+	err = db.Order("id desc").Limit(n).Offset((p - 1) * n).Find(&list).Error
+	bs.db = logic.Db.Debug().Table("billboard")
 	return
 }
 

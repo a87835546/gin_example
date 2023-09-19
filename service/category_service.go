@@ -22,7 +22,7 @@ func NewCategoryService() *CategoryService {
 	}
 }
 func (ms *CategoryService) GetCategories() (list []*param.CategoryResp, err error) {
-	err = ms.Db.Model(&param.CategoryResp{}).
+	err = logic.Db.Debug().Table("menu_category").Model(&param.CategoryResp{}).
 		Select("menu_category.id,menu_category.created_at,menu_category.title,menu_category.title_en,menu.title as menu_title,menu.title_en as menu_title_en,menu_category.desc,menu_category.index").
 		Joins("left join menu on menu_category.menu_id = menu.id and menu_category.status = 1").Find(&list).Error
 	return
@@ -58,8 +58,8 @@ func (ms *CategoryService) Update(p *models.CategoryModel) error {
 }
 func (ms *CategoryService) Insert(p *models.CategoryModel) error {
 	p.CreatedAt = time.Now().UnixMilli()
-	err := ms.Db.Create(p).Error
-	return err
+	res := logic.Db.Table("menu_category").Debug().Create(p)
+	return res.Error
 }
 func (ms *CategoryService) Delete(id int) error {
 	err := ms.Db.Where("id=?", id).Delete(models.CategoryModel{}).Error
@@ -74,7 +74,7 @@ func (ms *CategoryService) QueryByMenuId(id string) (m []*models.CategoryModel, 
 	return
 }
 func (ms *CategoryService) UpdateType(p *models.VideoTypeModel) error {
-	err := ms.TypeDb.Updates(p).Error
+	err := logic.Db.Table("video_type").Debug().Updates(p).Error
 	return err
 }
 func (ms *CategoryService) InsertType(p *models.VideoTypeModel) error {

@@ -4,6 +4,7 @@ import (
 	"gin_example/logic"
 	"gin_example/models"
 	"gorm.io/gorm"
+	"log"
 )
 
 type BannerService struct {
@@ -15,7 +16,11 @@ func NewBannerService() *BannerService {
 		db: logic.Db.Debug().Table("banner"),
 	}
 }
+func (bs *BannerService) reset() {
+	bs.db = logic.Db.Debug().Table("banner")
+}
 func (bs *BannerService) QueryAll() (list []*models.BannerModel, err error) {
+	log.Printf("db --->>>> %v\n", bs.db)
 	err = bs.db.Find(&list).Error
 	return
 }
@@ -30,6 +35,8 @@ func (bs *BannerService) Insert(model *models.BannerModel) (err error) {
 	return
 }
 func (bs *BannerService) Update(model *models.BannerModel) (err error) {
-	err = bs.db.Updates(model).Where("id=?", model.Id).Error
+	err = bs.db.Where("id=?", model.Id).Updates(model).Error
+	log.Printf("db --->>>> %v\n", bs.db)
+	bs.reset()
 	return
 }

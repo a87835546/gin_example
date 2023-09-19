@@ -34,7 +34,8 @@ func (mc *BillboardController) Query(ctx *gin.Context) {
 func (mc *BillboardController) GetList(ctx *gin.Context) {
 	page := ctx.Query("page")
 	num := ctx.Query("num")
-	list, err := mc.vs.GetList(page, num)
+	title := ctx.Query("menu_title")
+	list, err := mc.vs.GetList(page, num, title)
 	if err == nil {
 		RespOk(ctx, list)
 	} else {

@@ -49,6 +49,7 @@ func GetJsonData(c *gin.Context) {
 	c.JSON(http.StatusOK, jsonData)
 }
 func (mc *CategoryController) GetCategories(ctx *gin.Context) {
+	ctx.Query("")
 	list, err := mc.db.GetCategories()
 	if err == nil {
 		RespOk(ctx, list)
@@ -108,16 +109,16 @@ func (mc *CategoryController) InsertCategory(ctx *gin.Context) {
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
-		m, err := mc.db.QueryByTitleWithId(req.Title, req.MenuId)
+		m, _ := mc.db.QueryByTitleWithId(req.Title, req.MenuId)
 		log.Printf("menu --->> %#v", m)
 		if m.Id != 0 {
 			RespErrorWithMsg(ctx, utils.InsertDBErrorCode, "插入数据异常已经存在", m)
 		} else {
-			err = mc.db.Insert(&req)
-			if err == nil {
+			err1 := mc.db.Insert(&req)
+			if err1 == nil {
 				RespOk(ctx, nil)
 			} else {
-				RespErrorWithMsg(ctx, utils.UpdateDBErrorCode, err.Error(), nil)
+				RespErrorWithMsg(ctx, utils.UpdateDBErrorCode, err1.Error(), nil)
 			}
 		}
 	}
