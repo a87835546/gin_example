@@ -257,7 +257,7 @@ type Video struct {
 	Desc       string   `json:"desc,omitempty"`
 	Actor      string   `json:"actor,omitempty"`
 	Rate       string   `json:"rate,omitempty"`
-	Year       int      `json:"years,omitempty"`
+	Year       string   `json:"years,omitempty"`
 	Types      string   `json:"types,omitempty"`
 	MenuTitle  string   `json:"menu_title"`
 	Author     string   `json:"author"`
@@ -270,6 +270,13 @@ func ParserOne(ctx *gin.Context) {
 	id := ctx.Query("category_id")
 	categoryId, _ := strconv.Atoi(id)
 	RespOk(ctx, parserOne(url, title, categoryId))
+}
+func ParserOnePron(ctx *gin.Context) {
+	url := ctx.Query("url")
+	title := ctx.Query("menu_title")
+	id := ctx.Query("category_id")
+	categoryId, _ := strconv.Atoi(id)
+	RespOk(ctx, parserOnePron(url, title, categoryId))
 }
 
 func parserOne(url, title string, id int) (err error) {
@@ -306,15 +313,7 @@ func parserOne(url, title string, id int) (err error) {
 				v.Actor = titles[1]
 			}
 			if titles[0] == "年代" {
-				year := titles[1]
-				y, err := strconv.Atoi(year)
-				if err == nil {
-					v.Year = y
-					log.Printf("year--->>%s\n", year)
-
-				} else {
-					log.Printf("err--->>%s\n", err)
-				}
+				v.Year = titles[1]
 			}
 		}
 
@@ -354,6 +353,92 @@ func parserOne(url, title string, id int) (err error) {
 
 	log.Printf("video -->>> %v\n", v)
 	if len(v.Urls) > 0 {
+		us := v.URLs[0]
+		titles := strings.Split(us, "$")
+		if len(titles) > 1 {
+			v.Urls = titles[1]
+		}
+		v.MenuTitle = title
+		v.CategoryId = id
+		v.Author = "脚本"
+		b, _ := json.Marshal(&v)
+		var m map[string]string
+		_ = json.Unmarshal(b, &m)
+		fmt.Println(m)
+
+		resp, _ := http.Post("http://127.0.0.1:8080/api/v1/videos/insert", "application/json; charset=utf-8", bytes.NewReader(b))
+
+		body, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println(string(body))
+	}
+	return
+}
+func parserOnePron(url, title string, id int) (err error) {
+	if len(url) == 0 {
+		return nil
+	}
+	c := colly.NewCollector(
+		colly.MaxDepth(2),
+	)
+	v := &Video{}
+	c.OnResponse(func(r *colly.Response) {
+		fmt.Println("Visited", r.Request.URL)
+	})
+
+	c.OnHTML("div.detail p", func(e *colly.HTMLElement) {
+		fmt.Printf("detail -->>>%s\n", e.Text)
+		if strings.Contains(e.Text, "：") {
+			titles := strings.Split(e.Text, "：")
+			if titles[0] == "主演" {
+				v.Actor = titles[1]
+			}
+			if titles[0] == "类型" {
+				v.Types = titles[1]
+			}
+			if titles[0] == "备注" {
+				log.Printf("备注--->>>%v\n", titles[1])
+				if len(titles[1]) > 0 {
+					v.Desc = titles[1]
+				} else {
+					v.Desc = " "
+				}
+			}
+			if titles[0] == "上映日期" {
+				v.Year = titles[1]
+			}
+		}
+	})
+
+	c.OnHTML("h1.limit", func(e *colly.HTMLElement) {
+		fmt.Printf("title -->>>%s\n", e.Text)
+		v.Title = e.Text
+
+	})
+	c.OnHTML("img#detail-img", func(e *colly.HTMLElement) {
+		fmt.Printf("image -->>>%s\n", e.Attr("src"))
+		v.ThemeUrl = e.Attr("src")
+
+	})
+	c.OnHTML("div.link input", func(e *colly.HTMLElement) {
+		fmt.Printf("videoName-->>>%s\n", e.Attr("value"))
+		if len(e.Attr("value")) > 1 {
+			v.URLs = append(v.URLs, e.Attr("value"))
+		}
+	})
+
+	c.OnError(func(r *colly.Response, err error) {
+		fmt.Println("Request URL:", r.Request.URL, "failed with response:", string(r.Body), "\nError:", err.Error())
+	})
+
+	c.OnRequest(func(r *colly.Request) {
+		r.Headers.Set("User-Agent", RandomString())
+		fmt.Println("Visiting", r.URL.String())
+	})
+
+	c.Visit(url)
+
+	log.Printf("video -->>> %v\n", v)
+	if len(v.URLs) > 0 {
 		us := v.URLs[0]
 		titles := strings.Split(us, "$")
 		if len(titles) > 1 {

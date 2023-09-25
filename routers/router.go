@@ -32,6 +32,7 @@ func InitRouter() *gin.Engine {
 	{
 		apiv1.GET("/parser", controllers.Re)
 		apiv1.GET("/parserOne", controllers.ParserOne)
+		apiv1.GET("/parserOnePron", controllers.ParserOnePron)
 		apiv1.GET("/batch", controllers.BatchInsert)
 		apiv1.GET("/ping", func(context *gin.Context) {
 			context.JSON(200, gin.H{

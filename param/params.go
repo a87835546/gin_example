@@ -13,7 +13,7 @@ type InsertReq struct {
 	MenuTitle  string   `json:"menu_title"`
 	Duration   int      `json:"duration"`
 	Rate       string   `json:"rate"`
-	Years      int      `json:"years"`
+	Years      string   `json:"years"`
 	Urls       []string `json:"urls" gorm:"-"`
 }
 
