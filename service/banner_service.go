@@ -31,11 +31,12 @@ func (bs *BannerService) QueryAllByMenuId(id string) (list []*models.BannerWithV
 	return
 }
 func (bs *BannerService) Insert(model *models.BannerModel) (err error) {
+	bs.reset()
 	err = bs.db.Create(model).Error
 	return
 }
 func (bs *BannerService) Update(model *models.BannerModel) (err error) {
-	err = bs.db.Where("id=?", model.Id).Updates(model).Error
+	err = bs.db.Updates(model).Error
 	log.Printf("db --->>>> %v\n", bs.db)
 	bs.reset()
 	return

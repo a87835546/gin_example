@@ -170,6 +170,9 @@ func BatchInsert(ctx *gin.Context) {
 	start := ctx.Query("start")
 	end := ctx.Query("end")
 
+	mid := ctx.Query("menu_id")
+	mId, _ := strconv.Atoi(mid)
+
 	id, _ := strconv.Atoi(idStr)
 	s, _ := strconv.Atoi(start)
 	e, _ := strconv.Atoi(end)
@@ -206,7 +209,7 @@ func BatchInsert(ctx *gin.Context) {
 
 		for i := 0; i < len(urls); i++ {
 			url1 := fmt.Sprintf("https://bfzy.tv%s", urls[i])
-			parserOne(url1, title, id)
+			parserOne(url1, title, id, mId)
 		}
 	}
 
@@ -218,6 +221,10 @@ func Re(ctx *gin.Context) {
 	id := ctx.Query("category_id")
 	title := ctx.Query("menu_title")
 	categoryId, _ := strconv.Atoi(id)
+
+	mid := ctx.Query("menu_id")
+	mId, _ := strconv.Atoi(mid)
+
 	c := colly.NewCollector(
 		//colly.Async(true),
 		colly.MaxDepth(2),
@@ -245,7 +252,7 @@ func Re(ctx *gin.Context) {
 
 	for i := 0; i < len(urls); i++ {
 		url1 := fmt.Sprintf("https://bfzy.tv%s", urls[i])
-		parserOne(url1, title, categoryId)
+		parserOne(url1, title, categoryId, mId)
 	}
 }
 
@@ -260,6 +267,7 @@ type Video struct {
 	Year       string   `json:"years,omitempty"`
 	Types      string   `json:"types,omitempty"`
 	MenuTitle  string   `json:"menu_title"`
+	MenuId     int      `json:"menu_id"`
 	Author     string   `json:"author"`
 	CategoryId int      `json:"category_id"`
 }
@@ -267,19 +275,23 @@ type Video struct {
 func ParserOne(ctx *gin.Context) {
 	url := ctx.Query("url")
 	title := ctx.Query("menu_title")
+	mid := ctx.Query("menu_id")
 	id := ctx.Query("category_id")
 	categoryId, _ := strconv.Atoi(id)
-	RespOk(ctx, parserOne(url, title, categoryId))
+	mId, _ := strconv.Atoi(mid)
+	RespOk(ctx, parserOne(url, title, categoryId, mId))
 }
 func ParserOnePron(ctx *gin.Context) {
 	url := ctx.Query("url")
 	title := ctx.Query("menu_title")
+	mid := ctx.Query("menu_id")
 	id := ctx.Query("category_id")
 	categoryId, _ := strconv.Atoi(id)
-	RespOk(ctx, parserOnePron(url, title, categoryId))
+	mId, _ := strconv.Atoi(mid)
+	RespOk(ctx, parserOnePron(url, title, categoryId, mId))
 }
 
-func parserOne(url, title string, id int) (err error) {
+func parserOne(url, title string, id, mid int) (err error) {
 	if len(url) == 0 {
 		return nil
 	}
@@ -359,6 +371,7 @@ func parserOne(url, title string, id int) (err error) {
 			v.Urls = titles[1]
 		}
 		v.MenuTitle = title
+		v.MenuId = mid
 		v.CategoryId = id
 		v.Author = "脚本"
 		b, _ := json.Marshal(&v)
@@ -373,7 +386,7 @@ func parserOne(url, title string, id int) (err error) {
 	}
 	return
 }
-func parserOnePron(url, title string, id int) (err error) {
+func parserOnePron(url, title string, id, mid int) (err error) {
 	if len(url) == 0 {
 		return nil
 	}
@@ -445,6 +458,7 @@ func parserOnePron(url, title string, id int) (err error) {
 			v.Urls = titles[1]
 		}
 		v.MenuTitle = title
+		v.MenuId = mid
 		v.CategoryId = id
 		v.Author = "脚本"
 		b, _ := json.Marshal(&v)

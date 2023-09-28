@@ -79,7 +79,7 @@ type Billboard struct {
 	Author     string               `json:"author"`
 	Duration   int                  `json:"duration"`
 	Rate       string               `json:"rate"`
-	Years      int                  `json:"years"`
+	Years      string               `json:"years"`
 	Title      string               `json:"title" gorm:"title"`
 	Type       string               `json:"types" gorm:"column:types"`
 	Actor      string               `json:"actor"`
@@ -125,11 +125,11 @@ type ActorModel struct {
 }
 
 type WatchListModel struct {
-	Id        int       `json:"id" gorm:"id"`
-	VideoId   int64     `json:"video_id" gorm:"column:video_id"`
-	UserId    int       `json:"user_id" gorm:"column:user_id"`
-	UpdatedAt time.Time `json:"updated_at" gorm:"updated_at"`
-	CreatedAt time.Time `json:"created_at" gorm:"created_at"`
+	Id        int   `json:"id" gorm:"id"`
+	VideoId   int64 `json:"video_id" gorm:"column:video_id"`
+	UserId    int   `json:"user_id" gorm:"column:user_id"`
+	CreatedAt int64 `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt int64 `json:"updated_at" gorm:"autoUpdateTime:milli"`
 }
 
 type HistoryModel struct {

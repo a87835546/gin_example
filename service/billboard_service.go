@@ -41,7 +41,7 @@ func (bs *BillboardService) GetList(page, num, title string) (list []*models.Bil
 	}
 	db := bs.db
 	if len(title) != 0 {
-		db = bs.db.Where("menu_title=?", title)
+		db = bs.db.Where("menu_id=?", title)
 	}
 	err = db.Order("id desc").Limit(n).Offset((p - 1) * n).Find(&list).Error
 	bs.db = logic.Db.Debug().Table("billboard")
@@ -102,7 +102,8 @@ func (bs *BillboardService) QueryByUrl(url string) (bill *models.Billboard, err 
 	return
 }
 func (bs *BillboardService) QueryVideoIdByUrl(url string) (id int64, err error) {
-	err = bs.db.Select("id").Where("url=?", url).Scan(&id).Error
+
+	err = logic.Db.Debug().Table("billboard").Select("id").Where("url=?", url).Scan(&id).Error
 	return
 }
 

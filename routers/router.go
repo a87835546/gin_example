@@ -74,6 +74,7 @@ func InitRouter() *gin.Engine {
 		{
 			bill := controllers.NewBillboardController()
 			billboardGroup.GET("/list", bill.GetList)
+			billboardGroup.GET("/click", bill.Clicked)
 			billboardGroup.GET("/test", bill.Query)
 			billboardGroup.GET("/watch", bill.VideoClick)
 			billboardGroup.POST("/update", bill.UpdateBillboard)

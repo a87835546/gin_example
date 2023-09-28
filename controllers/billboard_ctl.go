@@ -1,17 +1,20 @@
 package controllers
 
 import (
+	"gin_example/models"
 	"gin_example/param"
 	"gin_example/service"
 	"gin_example/utils"
 	"github.com/gin-gonic/gin"
 	"log"
+	"strconv"
 )
 
 type BillboardController struct {
 	vs *service.BillboardService
 	bs service.BannerService
 	sc service.CategoryService
+	sh service.WatchedService
 }
 
 func NewBillboardController() *BillboardController {
@@ -19,6 +22,7 @@ func NewBillboardController() *BillboardController {
 		vs: service.NewBillboardService(),
 		bs: service.BannerService{},
 		sc: service.CategoryService{},
+		sh: service.WatchedService{},
 	}
 }
 
@@ -42,6 +46,25 @@ func (mc *BillboardController) GetList(ctx *gin.Context) {
 		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
 	}
 }
+
+func (mc *BillboardController) Clicked(ctx *gin.Context) {
+	uid := ctx.Query("user_id")
+	vid := ctx.Query("video_id")
+	uId, _ := strconv.Atoi(uid)
+	vId, _ := strconv.Atoi(vid)
+
+	req := models.WatchListModel{
+		UserId:  uId,
+		VideoId: int64(vId),
+	}
+	err := mc.sh.AddWatch(&req)
+	if err == nil {
+		RespOk(ctx, nil)
+	} else {
+		RespErrorWithMsg(ctx, utils.QueryDBErrorCode, err.Error(), nil)
+	}
+}
+
 func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
 	title := ctx.Query("menu_id")
 	page := ctx.Query("page")

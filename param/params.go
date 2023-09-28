@@ -10,7 +10,8 @@ type InsertReq struct {
 	Types      string   `json:"types"`
 	Actor      string   `json:"actor"`
 	CategoryId int      `json:"category_id"`
-	MenuTitle  string   `json:"menu_title"`
+	MenuTitle  string   `json:"menu_title" binding:"required"`
+	MenuId     int      `json:"menu_id" binding:"required"`
 	Duration   int      `json:"duration"`
 	Rate       string   `json:"rate"`
 	Years      string   `json:"years"`
@@ -46,8 +47,8 @@ type WatchListResp struct {
 	ThemeUrl string `json:"theme_url" gorm:"column:theme_url"`
 }
 type AddWatchReq struct {
-	VideoId int64 `json:"video_id" gorm:"column:video_id"`
-	UserId  int   `json:"user_id" gorm:"column:user_id"`
+	VideoId string `json:"video_id" gorm:"column:video_id"`
+	UserId  string `json:"user_id" gorm:"column:user_id"`
 }
 type SearchVideoReq struct {
 	Name  string `json:"name,omitempty"` //电影的名称

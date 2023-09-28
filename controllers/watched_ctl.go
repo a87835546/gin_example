@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"gin_example/models"
 	"gin_example/param"
 	"gin_example/service"
 	"gin_example/utils"
@@ -28,7 +29,7 @@ func (wc *WatchedController) GetListByUserId(ctx *gin.Context) {
 func (wc *WatchedController) AddWatch(ctx *gin.Context) {
 	req := param.AddWatchReq{}
 	err := ctx.ShouldBindJSON(&req)
-	err = wc.service.AddWatch(&req)
+	err = wc.service.AddWatch(&models.WatchListModel{})
 	if err != nil {
 		RespError(ctx, utils.InsertDBErrorCode, err.Error())
 	} else {

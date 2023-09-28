@@ -4,6 +4,7 @@ import (
 	"gin_example/logic"
 	"gin_example/models"
 	"gin_example/param"
+	"gorm.io/gorm/clause"
 )
 
 type WatchedService struct {
@@ -13,7 +14,7 @@ func NewWatchedService() *WatchedService {
 	return &WatchedService{}
 }
 func (_ *WatchedService) GetListByUserId(id int) (list []*param.WatchListResp, err error) {
-	rows, err := logic.Db.Debug().Table("watch_list").Where("user_id=?", id).Joins("left join billboard on billboard.id=watch_list.watch_id").Rows()
+	rows, err := logic.Db.Debug().Table("history").Where("user_id=?", id).Joins("left join billboard on billboard.id=history.watch_id").Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -28,13 +29,7 @@ func (_ *WatchedService) GetListByUserId(id int) (list []*param.WatchListResp, e
 	return
 }
 
-func (_ *WatchedService) AddWatch(req *param.AddWatchReq) (err error) {
-	m := models.WatchListModel{}
-	err = logic.Db.Debug().Table("watch_list").Where(req).Find(&m).Error
-	if err != nil || m.Id <= 0 {
-		err = logic.Db.Debug().Table("watch_list").Create(req).Error
-	} else {
-		err = logic.Db.Debug().Table("watch_list").Updates(req).Error
-	}
+func (_ *WatchedService) AddWatch(req *models.WatchListModel) (err error) {
+	err = logic.Db.Debug().Table("history").Clauses(clause.OnConflict{UpdateAll: true}).Create(&req).Error
 	return
 }
