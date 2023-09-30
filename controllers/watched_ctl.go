@@ -6,6 +6,7 @@ import (
 	"gin_example/service"
 	"gin_example/utils"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type WatchedController struct {
@@ -18,8 +19,9 @@ func NewWatchController() *WatchedController {
 	}
 }
 func (wc *WatchedController) GetListByUserId(ctx *gin.Context) {
-	userId := ctx.GetInt("user_id")
-	list, err := wc.service.GetListByUserId(userId)
+	userId := ctx.Query("user_id")
+	uid, err := strconv.Atoi(userId)
+	list, err := wc.service.GetListByUserId(uid)
 	if err != nil {
 		RespError(ctx, utils.QueryDBErrorCode, err.Error())
 	} else {

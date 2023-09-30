@@ -14,18 +14,11 @@ func NewWatchedService() *WatchedService {
 	return &WatchedService{}
 }
 func (_ *WatchedService) GetListByUserId(id int) (list []*param.WatchListResp, err error) {
-	rows, err := logic.Db.Debug().Table("history").Where("user_id=?", id).Joins("left join billboard on billboard.id=history.watch_id").Rows()
-	if err != nil {
-		return nil, err
-	}
-	if rows.Next() {
-		m := param.WatchListResp{}
-		err := rows.Scan(&m)
-		if err != nil {
-			return nil, err
-		}
-		list = append(list, &m)
-	}
+	err = logic.Db.Debug().Select("history.*,billboard.author,"+
+		"billboard.duration,billboard.rate,billboard.years,billboard.title,billboard.actor,billboard.theme_url,billboard.types,billboard.url").
+		Table("history").Where("history.user_id=?", id).
+		Joins("left join billboard on billboard.id=history.video_id").
+		Find(&list).Error
 	return
 }
 

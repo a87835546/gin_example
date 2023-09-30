@@ -44,7 +44,9 @@ type WatchListResp struct {
 	Years    int    `json:"years"`
 	Title    string `json:"title" gorm:"title"`
 	Actor    string `json:"actor"`
+	Type     string `json:"types" gorm:"column:types"`
 	ThemeUrl string `json:"theme_url" gorm:"column:theme_url"`
+	Url      string `json:"url" gorm:"column:url"`
 }
 type AddWatchReq struct {
 	VideoId string `json:"video_id" gorm:"column:video_id"`
