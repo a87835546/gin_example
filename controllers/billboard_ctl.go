@@ -69,8 +69,9 @@ func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
 	title := ctx.Query("menu_id")
 	page := ctx.Query("page")
 	num := ctx.Query("num")
+	uid := ctx.Query("user_id")
 	list, err := mc.vs.QueryByCategoryId(title, page, num)
-	banner, err := mc.bs.QueryAllByMenuId(title)
+	banner, err := mc.bs.QueryAllBannersByMenuIdWithUserId(title, uid)
 	resp := param.VideosResp{
 		Banner: banner,
 		List:   list,

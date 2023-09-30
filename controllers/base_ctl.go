@@ -151,11 +151,7 @@ func generateAppUserToken(c *gin.Context, user *models.User) {
 	key := fmt.Sprintf("user:%d:token", user.Id)
 	logic.Client.Set(key, token, 3600*time.Second)
 	user.Token = token
-	RespOk(c, gin.H{
-		"code":    200,
-		"message": "登录成功！",
-		"data":    user,
-	})
+	RespOk(c, user)
 	return
 }
 

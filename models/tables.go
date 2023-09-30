@@ -28,11 +28,12 @@ type AppUserRegisterReq struct {
 }
 
 type Favorite struct {
-	UserId    int       `json:"user_id"`
-	VideoId   int64     `json:"video_id"`
-	Id        int       `json:"id"`
-	CreatedAt time.Time `json:"created_at" gorm:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" gorm:"updated_at"`
+	UserId     int   `json:"user_id"`
+	VideoId    int64 `json:"video_id"`
+	Id         int   `json:"id"`
+	IsFavorite bool  `json:"is_favorite"`
+	CreatedAt  int64 `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt  int64 `json:"updated_at" gorm:"autoUpdateTime:milli"`
 }
 
 type Admin struct {
@@ -163,6 +164,7 @@ type BannerWithVideoModel struct {
 	Rate       string `json:"rate"`
 	CategoryId string `json:"category_id" gorm:"category_id"`
 	MenuTitle  string `json:"menu_title" gorm:"menu_title"`
+	IsFavorite bool   `json:"is_favorite"`
 }
 
 type VideoUrlListModel struct {

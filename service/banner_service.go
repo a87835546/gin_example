@@ -30,6 +30,17 @@ func (bs *BannerService) QueryAllByMenuId(id string) (list []*models.BannerWithV
 		Find(&list).Error
 	return
 }
+
+func (bs *BannerService) QueryAllBannersByMenuIdWithUserId(id, uid string) (list []*models.BannerWithVideoModel, err error) {
+	if len(uid) > 0 {
+		err = logic.Db.Debug().
+			Raw("select banner.*,billboard.actor,billboard.years,billboard.types,billboard.rate,billboard.menu_title,billboard.category_id from banner LEFT JOIN billboard ON banner.video_id = billboard.id where banner.menu_id = ?", id).
+			Find(&list).Error
+	} else {
+		return bs.QueryAllByMenuId(id)
+	}
+	return
+}
 func (bs *BannerService) Insert(model *models.BannerModel) (err error) {
 	bs.reset()
 	err = bs.db.Create(model).Error

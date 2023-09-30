@@ -5,6 +5,7 @@ import (
 	"gin_example/service"
 	"gin_example/utils"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 type FavoriteController struct {
@@ -20,10 +21,11 @@ func init() {
 }
 func (fc *FavoriteController) Add(ctx *gin.Context) {
 	req := models.Favorite{}
-	err := ctx.ShouldBind(&req)
+	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespError(ctx, utils.ParameterErrorCode, err.Error())
 	} else {
+		log.Printf("add fav req -->>%v\n", req)
 		ok := fc.sf.Insert(&req)
 		if ok {
 			RespOk(ctx, nil)
