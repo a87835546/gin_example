@@ -1,5 +1,4 @@
 #! /bin/sh
-cd main/
 ls
 printf "输入你想操作的内容 \n 1. 构建linux的项目 \n 2.运行项目 "
 read num
