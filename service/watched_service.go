@@ -21,7 +21,11 @@ func (_ *WatchedService) GetListByUserId(id int) (list []*param.WatchListResp, e
 		Find(&list).Error
 	return
 }
-
+func (_ *WatchedService) GetHotList() (list []*models.Billboard, err error) {
+	err = logic.Db.Debug().Raw("select * from billboard where id in (select * from (select video_id from history group by video_id order by count(*) desc limit 5) as temp)").
+		Find(&list).Error
+	return
+}
 func (_ *WatchedService) AddWatch(req *models.WatchListModel) (err error) {
 	err = logic.Db.Debug().Table("history").Clauses(clause.OnConflict{UpdateAll: true}).Create(&req).Error
 	return

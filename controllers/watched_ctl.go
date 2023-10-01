@@ -28,6 +28,15 @@ func (wc *WatchedController) GetListByUserId(ctx *gin.Context) {
 		RespOk(ctx, list)
 	}
 }
+
+func (wc *WatchedController) GetHotList(ctx *gin.Context) {
+	list, err := wc.service.GetHotList()
+	if err != nil {
+		RespError(ctx, utils.QueryDBErrorCode, err.Error())
+	} else {
+		RespOk(ctx, list)
+	}
+}
 func (wc *WatchedController) AddWatch(ctx *gin.Context) {
 	req := param.AddWatchReq{}
 	err := ctx.ShouldBindJSON(&req)

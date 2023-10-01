@@ -127,6 +127,7 @@ func InitRouter() *gin.Engine {
 		{
 			wc := controllers.NewWatchController()
 			watchGroup.GET("/list", wc.GetListByUserId)
+			watchGroup.GET("/hot", wc.GetHotList)
 			watchGroup.POST("/add", wc.AddWatch)
 		}
 

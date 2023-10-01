@@ -120,7 +120,8 @@ func (bs *BillboardService) Search(title string) (list []*models.Billboard, err 
 	return
 }
 func (bs *BillboardService) SearchByReq(req param.SearchVideoReq) (list []*models.Billboard, err error) {
-	err = bs.db.Where("title=? OR actor IN ? OR types=?", req.Name, req.Name, req.Name).Find(&list).Error
+	err = logic.Db.Debug().Table("billboard").Where("title like ? ", fmt.Sprintf("%s%s%s", "%", req.Name, "%")).Find(&list).Error
+
 	return
 }
 func (bs *BillboardService) QueryVideoByActor(name string) (list []*models.Billboard, err error) {
