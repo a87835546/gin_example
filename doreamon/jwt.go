@@ -13,7 +13,10 @@ import (
 // 中间件，检查token
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if strings.Contains(c.Request.RequestURI, "login") || strings.Contains(c.Request.RequestURI, "register") || strings.Contains(c.Request.RequestURI, "add") {
+		if strings.Contains(c.Request.RequestURI, "login") ||
+			strings.Contains(c.Request.RequestURI, "register") ||
+			strings.Contains(c.Request.RequestURI, "rule") ||
+			strings.Contains(c.Request.RequestURI, "add") {
 			c.Next()
 			return
 		}
@@ -53,6 +56,7 @@ func JWTAuth() gin.HandlerFunc {
 		}
 		c.Set("isPass", true)
 		c.Set("claims", claims)
+		c.Set("rule", claims.Rule)
 		c.Next()
 	}
 }
@@ -74,6 +78,7 @@ var (
 type CustomClaims struct {
 	ID   int    `json:"user_id"`
 	Name string `json:"username"`
+	Rule string `json:"rule"`
 	jwt.StandardClaims
 }
 

@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"gin_example/models"
+	"gin_example/doreamon/utils"
+	"gin_example/model"
 	"gin_example/service"
-	"gin_example/utils"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -20,7 +20,7 @@ func init() {
 
 }
 func (fc *FavoriteController) Add(ctx *gin.Context) {
-	req := models.Favorite{}
+	req := model.Favorite{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespError(ctx, utils.ParameterErrorCode, err.Error())
@@ -35,7 +35,7 @@ func (fc *FavoriteController) Add(ctx *gin.Context) {
 	}
 }
 func (fc *FavoriteController) Cancel(ctx *gin.Context) {
-	req := models.Favorite{}
+	req := model.Favorite{}
 	err := ctx.ShouldBind(&req)
 	if err != nil {
 		RespError(ctx, utils.ParameterErrorCode, err.Error())

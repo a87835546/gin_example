@@ -2,9 +2,9 @@ package service
 
 import (
 	"fmt"
+	param2 "gin_example/doreamon/param"
 	"gin_example/logic"
-	"gin_example/models"
-	"gin_example/param"
+	"gin_example/model"
 	"gorm.io/gorm"
 	"log"
 	"strconv"
@@ -25,12 +25,12 @@ func NewBillboardService() *BillboardService {
 	}
 }
 
-func (bs *BillboardService) Query() (list []*models.Billboard, err error) {
+func (bs *BillboardService) Query() (list []*model.Billboard, err error) {
 	err = bs.db.Limit(10).Offset(0).Find(&list).Error
 	return
 }
 
-func (bs *BillboardService) GetList(page, num, title string) (list []*models.Billboard, err error) {
+func (bs *BillboardService) GetList(page, num, title string) (list []*model.Billboard, err error) {
 	p, err := strconv.Atoi(page)
 	n, err := strconv.Atoi(num)
 	if p == 0 {
@@ -48,7 +48,7 @@ func (bs *BillboardService) GetList(page, num, title string) (list []*models.Bil
 	return
 }
 
-func (bs *BillboardService) Insert(billboard *param.InsertReq) (err error) {
+func (bs *BillboardService) Insert(billboard *param2.InsertReq) (err error) {
 	urls := make([]string, 0)
 	if len(billboard.Urls) > 0 {
 		urls = billboard.Urls
@@ -70,12 +70,12 @@ func (bs *BillboardService) Insert(billboard *param.InsertReq) (err error) {
 	tx.Commit()
 	tx1 := logic.Db.Begin()
 	if len(urls) > 0 {
-		temp := make([]*models.VideoUrlListModel, 0)
+		temp := make([]*model.VideoUrlListModel, 0)
 		for u := 0; u < len(urls); u++ {
 			if len(urls[u]) > 0 {
 				titles := strings.Split(urls[u], "$")
 				if len(titles) > 1 {
-					temp = append(temp, &models.VideoUrlListModel{Url: titles[1], Title: titles[0], VideoId: billboard.Id})
+					temp = append(temp, &model.VideoUrlListModel{Url: titles[1], Title: titles[0], VideoId: billboard.Id})
 				}
 			}
 		}
@@ -88,16 +88,16 @@ func (bs *BillboardService) Insert(billboard *param.InsertReq) (err error) {
 	return
 }
 func (bs *BillboardService) InsertUrls(urls []string, vid int64) (err error) {
-	temp := make([]*models.VideoUrlListModel, 0)
+	temp := make([]*model.VideoUrlListModel, 0)
 	for u := 0; u < len(urls); u++ {
 		if len(urls[u]) > 0 {
-			temp = append(temp, &models.VideoUrlListModel{VideoId: vid, Url: urls[u]})
+			temp = append(temp, &model.VideoUrlListModel{VideoId: vid, Url: urls[u]})
 		}
 	}
 	err = bs.vUrlDb.CreateInBatches(temp, len(temp)).Error
 	return
 }
-func (bs *BillboardService) QueryByUrl(url string) (bill *models.Billboard, err error) {
+func (bs *BillboardService) QueryByUrl(url string) (bill *model.Billboard, err error) {
 	err = bs.db.Where("url=?", url).First(&bill).Error
 	return
 }
@@ -107,24 +107,24 @@ func (bs *BillboardService) QueryVideoIdByUrl(url string) (id int64, err error) 
 	return
 }
 
-func (bs *BillboardService) QueryByTitle(title string) (bill *models.Billboard, err error) {
+func (bs *BillboardService) QueryByTitle(title string) (bill *model.Billboard, err error) {
 	err = bs.db.Where("title=?", title).First(&bill).Error
 	return
 }
-func (bs *BillboardService) Update(billboard *param.UpdateBillboardReq) (err error) {
+func (bs *BillboardService) Update(billboard *param2.UpdateBillboardReq) (err error) {
 	err = bs.db.Updates(&billboard).Where("id", billboard.Id).Error
 	return
 }
-func (bs *BillboardService) Search(title string) (list []*models.Billboard, err error) {
+func (bs *BillboardService) Search(title string) (list []*model.Billboard, err error) {
 	err = bs.db.Where("title=?", title).Find(&list).Error
 	return
 }
-func (bs *BillboardService) SearchByReq(req param.SearchVideoReq) (list []*models.Billboard, err error) {
+func (bs *BillboardService) SearchByReq(req param2.SearchVideoReq) (list []*model.Billboard, err error) {
 	err = logic.Db.Debug().Table("billboard").Where("title like ? ", fmt.Sprintf("%s%s%s", "%", req.Name, "%")).Find(&list).Error
 
 	return
 }
-func (bs *BillboardService) QueryVideoByActor(name string) (list []*models.Billboard, err error) {
+func (bs *BillboardService) QueryVideoByActor(name string) (list []*model.Billboard, err error) {
 	names := strings.Split(name, ",")
 	log.Printf("names --->>> %s", names)
 	if len(names) > 1 && len(names[0]) > 0 {
@@ -137,10 +137,10 @@ func (bs *BillboardService) QueryVideoByActor(name string) (list []*models.Billb
 	return
 }
 
-func (bs *BillboardService) QuerySubVideoById(name string) (list *models.Billboard, err error) {
+func (bs *BillboardService) QuerySubVideoById(name string) (list *model.Billboard, err error) {
 	err = bs.db.Where("id=?", name).Find(&list).Error
 	if fmt.Sprintf("%d", list.Id) == name {
-		var temp []*models.VideoUrlListModel
+		var temp []*model.VideoUrlListModel
 		err = bs.vUrlDb.Where("video_id = ?", name).Find(&temp).Error
 		list.Urls = temp
 	} else {
@@ -150,10 +150,10 @@ func (bs *BillboardService) QuerySubVideoById(name string) (list *models.Billboa
 }
 
 func (bs *BillboardService) Delete(i int) (err error) {
-	err = bs.db.Where("id=?", i).Delete(models.Billboard{}).Error
+	err = bs.db.Where("id=?", i).Delete(model.Billboard{}).Error
 	return err
 }
-func (bs *BillboardService) QueryByCategoryId(id any, page, num string) (resp []*param.VideosType, err error) {
+func (bs *BillboardService) QueryByCategoryId(id any, page, num string) (resp []*param2.VideosType, err error) {
 	p, err := strconv.Atoi(page)
 	n, err := strconv.Atoi(num)
 	if p == 0 {
@@ -162,11 +162,11 @@ func (bs *BillboardService) QueryByCategoryId(id any, page, num string) (resp []
 	if n == 0 {
 		n = 5
 	}
-	ids := make([]*models.CategoryModel, 0)
+	ids := make([]*model.CategoryModel, 0)
 	err = bs.noneDb.Raw("SELECT * FROM menu_category WHERE menu_id = ? ", id).Scan(&ids).Error
 	for i := 0; i < len(ids); i++ {
-		videos := make([]*models.Billboard, 0)
-		v := &param.VideosType{}
+		videos := make([]*model.Billboard, 0)
+		v := &param2.VideosType{}
 		err = bs.noneDb.Raw("SELECT * FROM billboard WHERE category_id = ? limit ?,?", ids[i].Id, (p-1)*n, n).Scan(&videos).Error
 		v.Type = ids[i].Title
 		v.TypeEn = ids[i].TitleEn
@@ -176,11 +176,11 @@ func (bs *BillboardService) QueryByCategoryId(id any, page, num string) (resp []
 	return
 }
 
-func (bs *BillboardService) QueryVideosUrlByVideoId(id any) (resp []*models.VideoUrlListModel, err error) {
+func (bs *BillboardService) QueryVideosUrlByVideoId(id any) (resp []*model.VideoUrlListModel, err error) {
 	err = bs.vUrlDb.Where("video_id=?", id).Scan(&resp).Error
 	return
 }
-func (bs *BillboardService) QueryVideosWithUrlsByCategoryId(id any, page, num string) (resp []*models.Billboard, err error) {
+func (bs *BillboardService) QueryVideosWithUrlsByCategoryId(id any, page, num string) (resp []*model.Billboard, err error) {
 	p, err := strconv.Atoi(page)
 	n, err := strconv.Atoi(num)
 	if p == 0 {
@@ -194,7 +194,7 @@ func (bs *BillboardService) QueryVideosWithUrlsByCategoryId(id any, page, num st
 	for i := 0; i < len(resp); i++ {
 		ids = append(ids, resp[i].Id)
 	}
-	urls := make([]models.VideoUrlListModel, 0)
+	urls := make([]model.VideoUrlListModel, 0)
 	err = logic.Db.Debug().Raw("SELECT * FROM video_url WHERE video_id IN (SELECT id FROM billboard WHERE category_id IN (SELECT id FROM menu_category WHERE menu_id = ? GROUP BY id) GROUP BY id)", id).Scan(&urls).Error
 	for i := 0; i < len(urls); i++ {
 		for j := 0; j < len(resp); j++ {

@@ -57,3 +57,13 @@ type SearchVideoReq struct {
 	Type  int    `json:"type"`           // 电影的类型
 	Actor string `json:"actor"`          // 主演
 }
+
+type AddGroupPolicyReq struct {
+	Name  string `json:"name,omitempty"`
+	Group string `json:"group,omitempty"`
+}
+type AddPolicyReq struct {
+	Name       string `json:"name,omitempty"`
+	Source     string `json:"source,omitempty"`
+	Permission string `json:"permission,omitempty"`
+}

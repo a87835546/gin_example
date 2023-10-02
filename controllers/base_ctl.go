@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"gin_example/doreamon"
+	"gin_example/doreamon/utils"
 	"gin_example/logic"
-	"gin_example/models"
+	"gin_example/model"
 	jwtgo "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-json"
@@ -79,14 +80,16 @@ func RespOk(ctx *gin.Context, data interface{}) {
 func RespError(ctx *gin.Context, code int, data interface{}) {
 	RespErrorWithMsg(ctx, code, "fail", data)
 }
-
+func RespAuthError(ctx *gin.Context) {
+	ctx.JSON(200, gin.H{"code": utils.PermissionErrorCode, "message": "Permission Denied", "data": ctx.Request.URL.Path})
+}
 func RespErrorWithMsg(ctx *gin.Context, code int, message string, data interface{}) {
 	ctx.JSON(200, gin.H{"code": code, "message": message, "data": data})
 	ctx.Next()
 }
 
 // 生成令牌
-func generateToken(c *gin.Context, user *models.Admin) {
+func generateToken(c *gin.Context, user *model.Admin) {
 	j := &doreamon.JWT{
 		SigningKey: []byte("newtrekWang"),
 	}
@@ -122,7 +125,7 @@ func generateToken(c *gin.Context, user *models.Admin) {
 	})
 	return
 }
-func generateAppUserToken(c *gin.Context, user *models.User) {
+func generateAppUserToken(c *gin.Context, user *model.User) {
 	j := &doreamon.JWT{
 		SigningKey: []byte("newtrekWang"),
 	}
@@ -130,6 +133,7 @@ func generateAppUserToken(c *gin.Context, user *models.User) {
 	claims := doreamon.CustomClaims{
 		ID:   user.Id,
 		Name: user.Username,
+		Rule: user.Rule,
 		StandardClaims: jwtgo.StandardClaims{
 			NotBefore: time.Now().Unix() - 1000, // 签名生效时间
 			ExpiresAt: time.Now().Unix() + 3600, // 过期时间 一小时

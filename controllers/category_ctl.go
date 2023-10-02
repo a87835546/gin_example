@@ -3,9 +3,9 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"gin_example/models"
+	"gin_example/doreamon/utils"
+	"gin_example/model"
 	"gin_example/service"
-	"gin_example/utils"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"log"
@@ -66,7 +66,7 @@ func (mc *CategoryController) GetAppTabbarCategories(ctx *gin.Context) {
 	}
 }
 func (mc *CategoryController) ModifyAppTabbarCategories(ctx *gin.Context) {
-	app := models.AppCategoryModel{}
+	app := model.AppCategoryModel{}
 	err := ctx.BindJSON(&app)
 	err = mc.db.EditAppCategories(&app)
 	if err == nil {
@@ -89,7 +89,7 @@ func (mc *CategoryController) DeleteAppTabbarCategories(ctx *gin.Context) {
 }
 
 func (mc *CategoryController) Update(ctx *gin.Context) {
-	req := models.CategoryModel{}
+	req := model.CategoryModel{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
@@ -104,7 +104,7 @@ func (mc *CategoryController) Update(ctx *gin.Context) {
 }
 
 func (mc *CategoryController) InsertCategory(ctx *gin.Context) {
-	req := models.CategoryModel{}
+	req := model.CategoryModel{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
@@ -135,7 +135,7 @@ func (mc *CategoryController) DeleteMenus(ctx *gin.Context) {
 }
 
 func (mc *CategoryController) InsertType(ctx *gin.Context) {
-	req := models.VideoTypeModel{}
+	req := model.VideoTypeModel{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
@@ -150,7 +150,7 @@ func (mc *CategoryController) InsertType(ctx *gin.Context) {
 }
 
 func (mc *CategoryController) UpdateType(ctx *gin.Context) {
-	req := models.VideoTypeModel{}
+	req := model.VideoTypeModel{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)

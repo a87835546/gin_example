@@ -2,26 +2,26 @@ package service
 
 import (
 	"gin_example/logic"
-	"gin_example/models"
+	"gin_example/model"
 	"log"
 )
 
 type ActorService struct {
 }
 
-func (as *ActorService) Update(p *models.ActorModel) error {
+func (as *ActorService) Update(p *model.ActorModel) error {
 	err := logic.Db.Table("actor").Updates(p).Error
 	return err
 }
-func (as *ActorService) Insert(p *models.ActorModel) error {
+func (as *ActorService) Insert(p *model.ActorModel) error {
 	err := logic.Db.Table("actor").Create(p).Error
 	return err
 }
 
-func (as *ActorService) QueryAll() (list []*models.ActorModel, err error) {
+func (as *ActorService) QueryAll() (list []*model.ActorModel, err error) {
 	rows, err := logic.Db.Table("actor").Rows()
 	for rows.Next() {
-		var l *models.ActorModel
+		var l *model.ActorModel
 		err = logic.Db.ScanRows(rows, &l)
 		if err != nil {
 			log.Println(err)
@@ -31,7 +31,7 @@ func (as *ActorService) QueryAll() (list []*models.ActorModel, err error) {
 	return
 }
 
-func (as *ActorService) QueryByName(title string) (m *models.ActorModel, err error) {
+func (as *ActorService) QueryByName(title string) (m *model.ActorModel, err error) {
 	err = logic.Db.Debug().Table("actor").Where("name=?", title).First(&m).Error
 	return
 }

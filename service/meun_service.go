@@ -1,15 +1,15 @@
 package service
 
 import (
+	"gin_example/doreamon/param"
 	"gin_example/logic"
-	"gin_example/models"
-	"gin_example/param"
+	"gin_example/model"
 )
 
 type MenuService struct {
 }
 
-func (ms *MenuService) GetMenus() (list []*models.MenuModel, err error) {
+func (ms *MenuService) GetMenus() (list []*model.MenuModel, err error) {
 	err = logic.Db.Table("menu").Find(&list).Error
 	return
 }
@@ -26,7 +26,7 @@ func (ms *MenuService) Delete(id int) error {
 	err := logic.Db.Table("menu").Where("id=?", id).Update("status", 1).Error
 	return err
 }
-func (ms *MenuService) QueryByTitle(title string) (m *models.MenuModel, err error) {
+func (ms *MenuService) QueryByTitle(title string) (m *model.MenuModel, err error) {
 	err = logic.Db.Debug().Table("menu").Where("title=?", title).First(&m).Error
 	return
 }

@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"gin_example/models"
-	"gin_example/param"
+	"gin_example/doreamon/param"
+	"gin_example/doreamon/utils"
+	"gin_example/model"
 	"gin_example/service"
-	"gin_example/utils"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -40,7 +40,7 @@ func (wc *WatchedController) GetHotList(ctx *gin.Context) {
 func (wc *WatchedController) AddWatch(ctx *gin.Context) {
 	req := param.AddWatchReq{}
 	err := ctx.ShouldBindJSON(&req)
-	err = wc.service.AddWatch(&models.WatchListModel{})
+	err = wc.service.AddWatch(&model.WatchListModel{})
 	if err != nil {
 		RespError(ctx, utils.InsertDBErrorCode, err.Error())
 	} else {

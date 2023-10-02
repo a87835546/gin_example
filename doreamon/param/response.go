@@ -1,17 +1,17 @@
 package param
 
 import (
-	"gin_example/models"
+	"gin_example/model"
 )
 
 type VideosResp struct {
-	Banner []*models.BannerWithVideoModel `json:"banner"`
-	List   []*VideosType                  `json:"videos"`
+	Banner []*model.BannerWithVideoModel `json:"banner"`
+	List   []*VideosType                 `json:"videos"`
 }
 type VideosType struct {
-	Type   string              `json:"type"`
-	TypeEn string              `json:"type_en"`
-	List   []*models.Billboard `json:"list"`
+	Type   string             `json:"type"`
+	TypeEn string             `json:"type_en"`
+	List   []*model.Billboard `json:"list"`
 }
 type CategoryResp struct {
 	Id          int64  `json:"id" gorm:"id"`

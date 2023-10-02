@@ -2,6 +2,8 @@ package logic
 
 import (
 	"fmt"
+	"github.com/casbin/casbin/v2"
+	gormadapter "github.com/casbin/gorm-adapter/v2"
 	"github.com/go-redis/redis"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -10,18 +12,20 @@ import (
 )
 
 const (
-	dbUser     string = "dev"
-	dbPassword string = "insert_password"
-	//dbPassword string = "12345678"
-	dbHost string = "127.0.0.1"
-	dbPort int    = 3306
-	dbName string = "dev_db"
+	dbUser string = "root"
+	//dbPassword string = "insert_password"
+	dbPassword string = "12345678"
+	dbHost     string = "127.0.0.1"
+	dbPort     int    = 3306
+	dbName     string = "dev_db"
 )
 
-var dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&loc=Local&parseTime=true", dbUser, dbPassword, dbHost, dbPort, dbName)
-
-var Db *gorm.DB
-var Client *redis.Client
+var (
+	dsn    = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&loc=Local&parseTime=true", dbUser, dbPassword, dbHost, dbPort, dbName)
+	Db     *gorm.DB
+	Client *redis.Client
+	E      *casbin.Enforcer
+)
 
 func InitDb() *gorm.DB {
 	Db = connectDB()
@@ -55,4 +59,25 @@ func connectDB() *gorm.DB {
 	}
 
 	return db
+}
+func InitCasbin() {
+	a, err := gormadapter.NewAdapter("mysql", "root:12345678@tcp(127.0.0.1:3306)/dev_db", true)
+	if err != nil {
+		log.Fatalf("mysql failed:%v\n", err)
+	}
+	e, err := casbin.NewEnforcer("model/model.conf", a)
+	if err != nil {
+		log.Fatalf("NewEnforecer failed:%v\n", err)
+	}
+	check(e, "dajun", "data", "read")
+	check(e, "alice", "data", "read")
+	E = e
+}
+func check(e *casbin.Enforcer, sub, obj, act string) {
+	ok, _ := e.Enforce(sub, obj, act)
+	if ok {
+		fmt.Printf("%s CAN %s %s\n", sub, act, obj)
+	} else {
+		fmt.Printf("%s CANNOT %s %s\n", sub, act, obj)
+	}
 }

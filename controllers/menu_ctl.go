@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"gin_example/param"
+	"gin_example/doreamon/param"
+	"gin_example/doreamon/utils"
 	"gin_example/service"
-	"gin_example/utils"
 	"github.com/gin-gonic/gin"
 	"log"
 )

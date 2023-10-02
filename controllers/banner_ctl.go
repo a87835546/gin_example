@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"gin_example/models"
+	"gin_example/doreamon/utils"
+	"gin_example/model"
 	"gin_example/service"
-	"gin_example/utils"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -38,7 +38,7 @@ func (bc *BannerController) QueryAll(ctx *gin.Context) {
 	}
 }
 func (bc *BannerController) Insert(ctx *gin.Context) {
-	req := models.BannerModel{}
+	req := model.BannerModel{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
@@ -58,7 +58,7 @@ func (bc *BannerController) Insert(ctx *gin.Context) {
 	}
 }
 func (bc *BannerController) Update(ctx *gin.Context) {
-	req := models.BannerModel{}
+	req := model.BannerModel{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)

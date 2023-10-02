@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -22,6 +23,7 @@ func main() {
 	}()
 	logic.InitDb()
 	err := logic.InitRedis()
+	logic.InitCasbin()
 	if err != nil {
 		return
 	}

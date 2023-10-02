@@ -1,4 +1,4 @@
-package models
+package model
 
 import (
 	"time"
@@ -15,6 +15,7 @@ type User struct {
 	DeviceType int       `json:"device_type"`
 	Ip         string    `json:"-"`
 	Token      string    `json:"token" gorm:"-"`
+	Rule       string    `json:"-"`
 	CreatedAt  time.Time `json:"-" gorm:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at" gorm:"updated_at"`
 }

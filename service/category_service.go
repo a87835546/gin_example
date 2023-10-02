@@ -1,9 +1,9 @@
 package service
 
 import (
+	"gin_example/doreamon/param"
 	"gin_example/logic"
-	"gin_example/models"
-	"gin_example/param"
+	"gin_example/model"
 	"gorm.io/gorm"
 	"time"
 )
@@ -36,12 +36,12 @@ func (ms *CategoryService) GetCategoriesWithMenuByMenuId(id []string) (list []*p
 	}
 	return
 }
-func (ms *CategoryService) GetAppCategories() (list []*models.AppCategoryModel, err error) {
+func (ms *CategoryService) GetAppCategories() (list []*model.AppCategoryModel, err error) {
 	db := ms.Db.Where("super_title=?", "").Find(&list).Group("index")
 	return list, db.Error
 }
 
-func (ms *CategoryService) EditAppCategories(model *models.AppCategoryModel) (err error) {
+func (ms *CategoryService) EditAppCategories(model *model.AppCategoryModel) (err error) {
 	err = ms.Db.Updates(model).Error
 	if err != nil {
 		err = ms.Db.Create(model).Error
@@ -49,40 +49,40 @@ func (ms *CategoryService) EditAppCategories(model *models.AppCategoryModel) (er
 	return
 }
 func (ms *CategoryService) DeleteAppCategories(id int) (err error) {
-	db := ms.Db.Where("id", id).Delete(models.AppCategoryModel{})
+	db := ms.Db.Where("id", id).Delete(model.AppCategoryModel{})
 	return db.Error
 }
-func (ms *CategoryService) Update(p *models.CategoryModel) error {
+func (ms *CategoryService) Update(p *model.CategoryModel) error {
 	err := ms.Db.Updates(p).Error
 	return err
 }
-func (ms *CategoryService) Insert(p *models.CategoryModel) error {
+func (ms *CategoryService) Insert(p *model.CategoryModel) error {
 	p.CreatedAt = time.Now().UnixMilli()
 	res := logic.Db.Table("menu_category").Debug().Create(p)
 	return res.Error
 }
 func (ms *CategoryService) Delete(id int) error {
-	err := ms.Db.Where("id=?", id).Delete(models.CategoryModel{}).Error
+	err := ms.Db.Where("id=?", id).Delete(model.CategoryModel{}).Error
 	return err
 }
-func (ms *CategoryService) QueryByTitleWithId(title string, id int) (m *models.CategoryModel, err error) {
+func (ms *CategoryService) QueryByTitleWithId(title string, id int) (m *model.CategoryModel, err error) {
 	err = ms.Db.Where("title=? and menu_id = ?", title, id).First(&m).Error
 	return
 }
-func (ms *CategoryService) QueryByMenuId(id string) (m []*models.CategoryModel, err error) {
+func (ms *CategoryService) QueryByMenuId(id string) (m []*model.CategoryModel, err error) {
 	err = ms.Db.Where("menu_id = ?", id).Find(&m).Error
 	return
 }
-func (ms *CategoryService) UpdateType(p *models.VideoTypeModel) error {
+func (ms *CategoryService) UpdateType(p *model.VideoTypeModel) error {
 	err := logic.Db.Table("video_type").Debug().Updates(p).Error
 	return err
 }
-func (ms *CategoryService) InsertType(p *models.VideoTypeModel) error {
+func (ms *CategoryService) InsertType(p *model.VideoTypeModel) error {
 	err := ms.TypeDb.Create(p).Error
 	return err
 }
 
-func (ms *CategoryService) TypesBySuperId() (list []*models.VideoTypeModel, err error) {
+func (ms *CategoryService) TypesBySuperId() (list []*model.VideoTypeModel, err error) {
 	err = ms.TypeDb.Find(&list).Error
 	return
 }

@@ -2,7 +2,7 @@ package service
 
 import (
 	"gin_example/logic"
-	"gin_example/models"
+	"gin_example/model"
 	"gorm.io/gorm"
 	"log"
 )
@@ -18,29 +18,29 @@ func NewUserService() *UserService {
 		adminDb: logic.Db.Debug().Table("admin"),
 	}
 }
-func (us *UserService) QueryUserByName(username string) (user *models.Admin, err error) {
+func (us *UserService) QueryUserByName(username string) (user *model.Admin, err error) {
 	tx := logic.Db.Debug().Table("admin").First(&user, "username=?", username)
 	err = tx.Error
 	return user, err
 }
-func (us *UserService) QueryUserById(username string) (user *models.Admin, err error) {
+func (us *UserService) QueryUserById(username string) (user *model.Admin, err error) {
 	tx := logic.Db.Debug().Table("admin").First(&user, "id=?", username)
 	err = tx.Error
 	return user, err
 }
-func (us *UserService) GetUsers() []*models.Admin {
-	users := make([]*models.Admin, 0)
+func (us *UserService) GetUsers() []*model.Admin {
+	users := make([]*model.Admin, 0)
 	logic.Db.Find(&users).Limit(10).Offset(0)
 	return users
 }
 
-func (us *UserService) GetUser() (user *models.Admin) {
-	logic.Db.First(&user, &models.Admin{
+func (us *UserService) GetUser() (user *model.Admin) {
+	logic.Db.First(&user, &model.Admin{
 		Username: "zhansan",
 	})
 	return
 }
-func (us *UserService) InsertUser(user *models.Admin) bool {
+func (us *UserService) InsertUser(user *model.Admin) bool {
 	_db := logic.Db.Debug().Table("admin").Create(user)
 	if _db.Error != nil {
 		log.Println("插入数据异常吗", _db.Error.Error())
@@ -54,16 +54,16 @@ func (us *UserService) AppUpdateIp(username, ip string) (err error) {
 	}
 	return
 }
-func (us *UserService) AppQueryUserByName(username string) (user *models.User, err error) {
+func (us *UserService) AppQueryUserByName(username string) (user *model.User, err error) {
 	err = logic.Db.Table("user").First(&user, "username=?", username).Error
 	if err != nil {
 		log.Println("query user by name err", err)
 	}
 	return
 }
-func (us *UserService) AppCreate(user *models.AppUserRegisterReq) (u *models.User, err error) {
+func (us *UserService) AppCreate(user *model.AppUserRegisterReq) (u *model.User, err error) {
 
-	err = logic.Db.Table("user").Create(&models.User{Username: user.Username, Password: user.Password, Ip: user.Password, DeviceType: user.DeviceType}).Error
+	err = logic.Db.Table("user").Create(&model.User{Username: user.Username, Password: user.Password, Ip: user.Password, DeviceType: user.DeviceType}).Error
 	if err != nil {
 		log.Println("插入数据异常--->>", err.Error())
 	} else {

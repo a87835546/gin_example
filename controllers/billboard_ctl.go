@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"gin_example/models"
-	"gin_example/param"
+	param2 "gin_example/doreamon/param"
+	"gin_example/doreamon/utils"
+	"gin_example/model"
 	"gin_example/service"
-	"gin_example/utils"
 	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
@@ -53,7 +53,7 @@ func (mc *BillboardController) Clicked(ctx *gin.Context) {
 	uId, _ := strconv.Atoi(uid)
 	vId, _ := strconv.Atoi(vid)
 
-	req := models.WatchListModel{
+	req := model.WatchListModel{
 		UserId:  uId,
 		VideoId: int64(vId),
 	}
@@ -72,7 +72,7 @@ func (mc *BillboardController) GetListByCategory(ctx *gin.Context) {
 	uid := ctx.Query("user_id")
 	list, err := mc.vs.QueryByCategoryId(title, page, num)
 	banner, err := mc.bs.QueryAllBannersByMenuIdWithUserId(title, uid)
-	resp := param.VideosResp{
+	resp := param2.VideosResp{
 		Banner: banner,
 		List:   list,
 	}
@@ -93,7 +93,7 @@ func (mc *BillboardController) GetVideoUrlsByVideoId(ctx *gin.Context) {
 	}
 }
 func (mc *BillboardController) InsertBillboard(ctx *gin.Context) {
-	req := param.InsertReq{}
+	req := param2.InsertReq{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
@@ -118,7 +118,7 @@ func (mc *BillboardController) InsertBillboard(ctx *gin.Context) {
 	}
 }
 func (mc *BillboardController) UpdateBillboard(ctx *gin.Context) {
-	req := param.UpdateBillboardReq{}
+	req := param2.UpdateBillboardReq{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
@@ -151,7 +151,7 @@ func (mc *BillboardController) QuerySubVideoById(ctx *gin.Context) {
 	}
 }
 func (mc *BillboardController) SearchBillboard(ctx *gin.Context) {
-	req := param.SearchVideoReq{}
+	req := param2.SearchVideoReq{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, "获取参数异常", err.Error())

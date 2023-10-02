@@ -1,9 +1,9 @@
 package service
 
 import (
+	"gin_example/doreamon/param"
 	"gin_example/logic"
-	"gin_example/models"
-	"gin_example/param"
+	"gin_example/model"
 	"gorm.io/gorm/clause"
 )
 
@@ -21,12 +21,12 @@ func (_ *WatchedService) GetListByUserId(id int) (list []*param.WatchListResp, e
 		Find(&list).Error
 	return
 }
-func (_ *WatchedService) GetHotList() (list []*models.Billboard, err error) {
+func (_ *WatchedService) GetHotList() (list []*model.Billboard, err error) {
 	err = logic.Db.Debug().Raw("select * from billboard where id in (select * from (select video_id from history group by video_id order by count(*) desc limit 5) as temp)").
 		Find(&list).Error
 	return
 }
-func (_ *WatchedService) AddWatch(req *models.WatchListModel) (err error) {
+func (_ *WatchedService) AddWatch(req *model.WatchListModel) (err error) {
 	err = logic.Db.Debug().Table("history").Clauses(clause.OnConflict{UpdateAll: true}).Create(&req).Error
 	return
 }

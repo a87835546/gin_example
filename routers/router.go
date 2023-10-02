@@ -3,13 +3,15 @@ package routers
 import (
 	"gin_example/controllers"
 	"gin_example/doreamon"
-	"gin_example/middleware"
+	middleware2 "gin_example/doreamon/middleware"
+	"gin_example/logic"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 func InitRouter() *gin.Engine {
 	r := gin.New()
-	r.Use(middleware.Cors())
+	r.Use(middleware2.Cors())
 	r.Use(gin.Logger())
 	//h := fmt.Sprintf("-%d", time.Now().Hour())
 	//t := time.Now().Format("2006-01-02")
@@ -22,12 +24,15 @@ func InitRouter() *gin.Engine {
 	//log.SetOutput(f)
 	//r.Use(gin.LoggerWithWriter(f))
 	r.Use(gin.Recovery())
-	r.Use(middleware.ErrorHttp)
-	//r.Use(doreamon.JWTAuth())
+	r.Use(middleware2.ErrorHttp)
+	r.Use(doreamon.JWTAuth())
 	//gin.DefaultWriter = io.MultiWriter(f)
 
 	//r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
+	err := logic.E.LoadPolicy()
+	if err != nil {
+		log.Printf("load policy err -->> %v", err)
+	}
 	apiv1 := r.Group("/api/v1")
 	{
 		apiv1.GET("/parser", controllers.Re)
@@ -72,6 +77,7 @@ func InitRouter() *gin.Engine {
 
 		billboardGroup := apiv1.Group("/videos")
 		{
+			billboardGroup.Use(middleware2.Auth(logic.E))
 			bill := controllers.NewBillboardController()
 			billboardGroup.GET("/list", bill.GetList)
 			billboardGroup.GET("/click", bill.Clicked)
@@ -138,6 +144,18 @@ func InitRouter() *gin.Engine {
 			bannerGroup.GET("/queryByMenuId", wc.QueryByMenuId)
 			bannerGroup.POST("/add", wc.Insert)
 			bannerGroup.POST("/update", wc.Update)
+		}
+
+		ruleGroup := apiv1.Group("/rule")
+		{
+			rc := controllers.NewRuleController()
+			ruleGroup.GET("/get", rc.GetPolicy)
+			ruleGroup.GET("/getgroup", rc.GetGroupPolicy)
+			ruleGroup.GET("/getgroupbyrule", rc.GetGroupPolicyByRule)
+			ruleGroup.GET("/getGroupPolicy", rc.GetNamedGroupingPolicy)
+			ruleGroup.GET("/delete", rc.DeleteGroupPolicy)
+			ruleGroup.POST("/addPolicy", rc.AddPolicy)
+			ruleGroup.POST("/addGroupPolicy", rc.AddGroupPolicy)
 		}
 	}
 	return r

@@ -3,9 +3,9 @@ package controllers
 import (
 	"fmt"
 	"gin_example/doreamon"
-	"gin_example/models"
+	"gin_example/doreamon/utils"
+	"gin_example/model"
 	"gin_example/service"
-	"gin_example/utils"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -114,7 +114,7 @@ func (uc *UserCtl) AppUserLogin(ctx *gin.Context) {
 }
 
 func (uc *UserCtl) AppCreateUser(ctx *gin.Context) {
-	req := models.AppUserRegisterReq{}
+	req := model.AppUserRegisterReq{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		return
@@ -147,7 +147,7 @@ func (uc *UserCtl) Logout(ctx *gin.Context) {
 	ctx.JSON(200, uc.us.GetUsers())
 }
 func (uc *UserCtl) AddUsers(ctx *gin.Context) {
-	user := models.Admin{}
+	user := model.Admin{}
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
 	} else {
@@ -189,7 +189,7 @@ func (uc *UserCtl) FetchDataFromPron(ctx *gin.Context) {
 
 	c := colly.NewCollector()
 	urls := make([]string, 0)
-	urls1 := make([]*models.VideoModel, 0)
+	urls1 := make([]*model.VideoModel, 0)
 	// Find and visit all links
 	c.OnHTML("div.wrapper div.container div.frontListingWrapper ul li.pcVideoListItem div.phimage a", func(e *colly.HTMLElement) {
 		//factId, err := strconv.Atoi(e.Attr("id"))
@@ -204,7 +204,7 @@ func (uc *UserCtl) FetchDataFromPron(ctx *gin.Context) {
 		fmt.Println("Visiting", r.URL)
 		if r.URL.String() != "https://www.pornhub.com" {
 			urls = append(urls, r.URL.String())
-			urls1 = append(urls1, &models.VideoModel{
+			urls1 = append(urls1, &model.VideoModel{
 				Url:        r.URL.String(),
 				IsDownload: false,
 			})
@@ -214,11 +214,11 @@ func (uc *UserCtl) FetchDataFromPron(ctx *gin.Context) {
 
 	c.Visit("https://www.pornhub.com")
 
-	infos := make([]*models.VideoInfo, 0)
+	infos := make([]*model.VideoInfo, 0)
 	wg := sync.WaitGroup{}
-	for _, model := range urls1 {
+	for _, url := range urls1 {
 		wg.Add(1)
-		go func(m *models.VideoModel) {
+		go func(m *model.VideoModel) {
 			defer uc.mu.RUnlock()
 			res, err := runCommand("lux  -i " + m.Url)
 			if err != nil {
@@ -228,9 +228,9 @@ func (uc *UserCtl) FetchDataFromPron(ctx *gin.Context) {
 			}
 
 			uc.mu.RLock()
-			infos = append(infos, &models.VideoInfo{Url: m.Url, Title: res})
+			infos = append(infos, &model.VideoInfo{Url: m.Url, Title: res})
 			wg.Done()
-		}(model)
+		}(url)
 	}
 	wg.Wait()
 	svs := service.VideoService{}

@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"gin_example/models"
+	"gin_example/doreamon/utils"
+	"gin_example/model"
 	"gin_example/service"
-	"gin_example/utils"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -23,7 +23,7 @@ func (ac *ActorController) QueryAll(ctx *gin.Context) {
 }
 
 func (ac *ActorController) Insert(ctx *gin.Context) {
-	req := models.ActorModel{}
+	req := model.ActorModel{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
@@ -44,7 +44,7 @@ func (ac *ActorController) Insert(ctx *gin.Context) {
 }
 
 func (ac *ActorController) Update(ctx *gin.Context) {
-	req := models.ActorModel{}
+	req := model.ActorModel{}
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		RespErrorWithMsg(ctx, utils.ParameterErrorCode, err.Error(), nil)
