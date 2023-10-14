@@ -18,17 +18,21 @@ const (
 	dbHost     string = "127.0.0.1"
 	dbPort     int    = 3306
 	dbName     string = "dev_db"
+	ruleBbName string = "rule_db"
 )
 
 var (
-	dsn    = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&loc=Local&parseTime=true", dbUser, dbPassword, dbHost, dbPort, dbName)
-	Db     *gorm.DB
-	Client *redis.Client
-	E      *casbin.Enforcer
+	dsn     = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&loc=Local&parseTime=true", dbUser, dbPassword, dbHost, dbPort, dbName)
+	RuleDSN = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&loc=Local&parseTime=true", dbUser, dbPassword, dbHost, dbPort, ruleBbName)
+	Db      *gorm.DB
+	RuleDb  *gorm.DB
+	Client  *redis.Client
+	E       *casbin.Enforcer
 )
 
 func InitDb() *gorm.DB {
 	Db = connectDB()
+	RuleDb = connectRuleDB()
 	return Db
 }
 func InitRedis() error {
@@ -50,6 +54,20 @@ func connectDB() *gorm.DB {
 	var err error
 	fmt.Println("dsn : ", dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
+
+	if err != nil {
+		fmt.Printf("Error connecting to database : error=%v\n", err)
+		return nil
+	} else {
+		log.Println("db connect success")
+	}
+
+	return db
+}
+func connectRuleDB() *gorm.DB {
+	var err error
+	fmt.Println("dsn : ", RuleDSN)
+	db, err := gorm.Open(mysql.Open(RuleDSN), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
 
 	if err != nil {
 		fmt.Printf("Error connecting to database : error=%v\n", err)

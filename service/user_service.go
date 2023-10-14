@@ -71,3 +71,12 @@ func (us *UserService) AppCreate(user *model.AppUserRegisterReq) (u *model.User,
 	}
 	return
 }
+
+type RuleUserService struct {
+	User *gorm.DB
+}
+
+func (rs *RuleUserService) CreateInBatches(userModel []*model.UserModel) (err error) {
+	err = logic.RuleDb.Table("user").CreateInBatches(userModel, len(userModel)).Error
+	return
+}

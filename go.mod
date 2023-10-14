@@ -11,6 +11,7 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/goccy/go-json v0.10.2
 	github.com/gocolly/colly/v2 v2.1.0
+	github.com/kjk/betterguid v0.0.0-20170621091430-c442874ba63a
 	golang.org/x/exp v0.0.0-20190121172915-509febef88a4
 	golang.org/x/oauth2 v0.9.0
 	google.golang.org/api v0.22.0

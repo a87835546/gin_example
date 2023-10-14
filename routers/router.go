@@ -25,7 +25,7 @@ func InitRouter() *gin.Engine {
 	//r.Use(gin.LoggerWithWriter(f))
 	r.Use(gin.Recovery())
 	r.Use(middleware2.ErrorHttp)
-	r.Use(doreamon.JWTAuth())
+	//r.Use(doreamon.JWTAuth())
 	//gin.DefaultWriter = io.MultiWriter(f)
 
 	//r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -77,7 +77,7 @@ func InitRouter() *gin.Engine {
 
 		billboardGroup := apiv1.Group("/videos")
 		{
-			billboardGroup.Use(middleware2.Auth(logic.E))
+			//billboardGroup.Use(middleware2.Auth(logic.E))
 			bill := controllers.NewBillboardController()
 			billboardGroup.GET("/list", bill.GetList)
 			billboardGroup.GET("/click", bill.Clicked)
@@ -156,6 +156,22 @@ func InitRouter() *gin.Engine {
 			ruleGroup.GET("/delete", rc.DeleteGroupPolicy)
 			ruleGroup.POST("/addPolicy", rc.AddPolicy)
 			ruleGroup.POST("/addGroupPolicy", rc.AddGroupPolicy)
+
+			ruleGroup.GET("/list", rc.GetRules)
+			ruleGroup.GET("/getList", rc.GetRulesWithoutRoot)
+			ruleGroup.POST("/insert", rc.InsertRule)
+			ruleGroup.POST("/update", rc.UpdateRule)
+			ruleGroup.GET("/users", rc.GetUsers)
+			ruleGroup.POST("/user/add", rc.AddUsers)
+			ruleGroup.POST("/user/update", rc.UpdateUser)
+
+		}
+		pGroup := apiv1.Group("/permission")
+		{
+			cc := controllers.NewPermissionController()
+			pGroup.GET("/list", cc.Query)
+			pGroup.POST("/add", cc.Add)
+			pGroup.POST("/update", cc.Update)
 		}
 	}
 	return r

@@ -73,3 +73,52 @@ func (rs *RuleService) GetNamedGroupingPolicy() [][]string {
 	_ = logic.E.LoadPolicy()
 	return res
 }
+
+type Tmp struct {
+	Id          int `json:"id"`
+	HasChildren int `json:"has_children"`
+}
+
+func (rs *RuleService) GetRules(sid int) (list []*model.RuleModel, err error) {
+	err = logic.RuleDb.Table("rule").Debug().Where("super_id=?", sid).Find(&list).Error
+	tmp := make([]*Tmp, 0)
+
+	err = logic.RuleDb.Raw("select (count(id)>0) as has_children,super_id as id from rule where super_id in (select id from rule where super_id = ?) group by id", sid).Scan(&tmp).Error
+	if len(tmp) > 0 {
+		for i := 0; i < len(tmp); i++ {
+			for j := 0; j < len(list); j++ {
+				if list[j].Id == tmp[i].Id {
+					list[j].HasChildren = tmp[i].HasChildren > 0
+				}
+			}
+		}
+	}
+	return
+}
+
+func (rs *RuleService) GetRulesWithoutRoot() (list []*model.RuleModel, err error) {
+	err = logic.RuleDb.Table("rule").Debug().Where("super_id!=?", 0).Find(&list).Error
+	return
+}
+func (rs *RuleService) InsertRule(model model.RuleModel) (err error) {
+	err = logic.RuleDb.Table("rule").Debug().Create(&model).Error
+	return
+}
+func (rs *RuleService) UpdateRule(model model.RuleModel) (err error) {
+	err = logic.RuleDb.Table("rule").Debug().Updates(&model).Error
+	return
+}
+
+func (rs *RuleService) GetUsers() (model []*model.UserModel, err error) {
+	err = logic.RuleDb.Table("user").Debug().Limit(10).Order("id desc").Find(&model).Error
+	return
+}
+func (rs *RuleService) AddUser(model *model.UserModel) (err error) {
+	err = logic.RuleDb.Table("user").Debug().Create(&model).Error
+	return
+}
+
+func (rs *RuleService) UpdateUser(model *model.UserModel) (err error) {
+	err = logic.RuleDb.Table("user").Debug().Updates(&model).Error
+	return
+}
