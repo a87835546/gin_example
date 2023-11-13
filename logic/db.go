@@ -46,6 +46,19 @@ var script = `
 			end
 		return value
 `
+var script1 = `
+	local key = KEYS[1]
+	local sum = redis.call("get",key)
+	if not sum then
+	  sum = 0
+	end
+	local num_arg = #ARGV
+	for i =1,num_arg do
+		sum = sum + ARGV[i]
+	end
+	redis.call("set",key,sum)
+	return sum
+`
 
 func useLua() {
 	//编写脚本 - 检查数值，是否够用，够用再减，否则返回减掉后的结果
@@ -74,8 +87,8 @@ func InitRedis() error {
 		log.Println("redis connect success")
 
 		useLua()
-		l := redis.NewScript(script)
-		if n, err := l.Run(Client, []string{"test", "a", "b"}).Result(); err != nil {
+		l := redis.NewScript(script1)
+		if n, err := l.Run(Client, []string{"test1"}, 1, 2, 3).Result(); err != nil {
 			log.Println("get redis value err--->>>", err.Error())
 		} else {
 			log.Printf("redis get value --->>> %s\n", n)
