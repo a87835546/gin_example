@@ -5,6 +5,7 @@ import (
 	"github.com/casbin/casbin/v2"
 	gormadapter "github.com/casbin/gorm-adapter/v2"
 	"github.com/go-redis/redis"
+	lua "github.com/yuin/gopher-lua"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -35,6 +36,31 @@ func InitDb() *gorm.DB {
 	RuleDb = connectRuleDB()
 	return Db
 }
+
+var script = `
+		local value = redis.call("Get", KEYS[1])
+		  local result  = ''
+			local arg={...}
+			for i,v in ipairs(arg) do
+				result = result .. v
+			end
+		return value
+`
+
+func useLua() {
+	//编写脚本 - 检查数值，是否够用，够用再减，否则返回减掉后的结果
+	var luaScript = redis.NewScript(`
+		local value = redis.call("Get", KEYS[1])
+		return value
+	`)
+	//执行脚本
+	n, err := luaScript.Run(Client, []string{"test", "6"}).Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("结果", n, err)
+}
+
 func InitRedis() error {
 	Client = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379", // host:port of the redis server
@@ -45,8 +71,15 @@ func InitRedis() error {
 	if err := Client.Ping().Err(); err != nil {
 		log.Println("err--->>>", err.Error())
 	} else {
-		//Client.Set("test", "a", -1)
 		log.Println("redis connect success")
+
+		useLua()
+		l := redis.NewScript(script)
+		if n, err := l.Run(Client, []string{"test", "a", "b"}).Result(); err != nil {
+			log.Println("get redis value err--->>>", err.Error())
+		} else {
+			log.Printf("redis get value --->>> %s\n", n)
+		}
 	}
 	return nil
 }
@@ -98,4 +131,28 @@ func check(e *casbin.Enforcer, sub, obj, act string) {
 	} else {
 		fmt.Printf("%s CANNOT %s %s\n", sub, act, obj)
 	}
+}
+func InitLua() *lua.LState {
+	l := lua.NewState()
+	defer l.Close()
+	if err := l.DoFile("controllers/redis.lua"); err != nil {
+		panic(err)
+	}
+	err := l.CallByParam(lua.P{
+		Fn:      l.GetGlobal("getValue"),
+		NRet:    1,
+		Protect: true,
+	}, lua.LString("test"))
+	if err != nil {
+		panic(err)
+	}
+	ret := l.Get(-1)
+	l.Pop(1)
+	res, ok := ret.(lua.LString)
+	if ok {
+		log.Printf("res-->>%s", res)
+	} else {
+		log.Printf("err")
+	}
+	return l
 }
