@@ -80,6 +80,7 @@ func InitRedis() error {
 		} else {
 			log.Printf("redis get value --->>> %s\n", n)
 		}
+		InitLua()
 	}
 	return nil
 }
@@ -139,10 +140,10 @@ func InitLua() *lua.LState {
 		panic(err)
 	}
 	err := l.CallByParam(lua.P{
-		Fn:      l.GetGlobal("getValue"),
+		Fn:      l.GetGlobal("getScriptValue"),
 		NRet:    1,
 		Protect: true,
-	}, lua.LString("test"))
+	}, lua.LString("test"), lua.LString("test1"), lua.LString("test2"))
 	if err != nil {
 		panic(err)
 	}

@@ -8,20 +8,20 @@ function test1(val)
     return val
 end
 
-function getValue(res,...)
+function getValue(...)
     result  = ''
     print("result--->>>>"..result)
 
     local arg={...}
-    for i,v in ipairs(arg) do
+    for _,v in ipairs(arg) do
         print("val--->>>>"..v)
         result = result .. v
     end
     print("总共传入 " .. select("#",...) .. " 个数")
-    local value = res.call("Get",arg[1])
+    local value = redis.call("Get",arg[1])
     print("当前值"..value)
     if( value - arg[2] >= 0 ) then
-        local leftStock = res.call("DecrBy" , arg[1],arg[2])
+        local leftStock = redis.call("DecrBy" , arg[1],arg[2])
         print("剩余值为" .. leftStock );
         return leftStock
     else
@@ -41,5 +41,5 @@ function getScriptValue(...)
         result = result .. v
     end
     print("总共传入 " .. select("#",...) .. " 个数")
-    return ""
+    return result
 end
